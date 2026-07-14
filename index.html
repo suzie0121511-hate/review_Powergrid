@@ -4,102 +4,231 @@
   <meta charset="UTF-8">
   <title>我的电气工程错题本</title>
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-  <meta name="description" content="Personal Mistake Notebook">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
-  <!-- 引入主题样式 -->
   <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify@4/lib/themes/vue.css">
   <style>
-    /* 自定义错题卡片样式，用于复习功能 */
+    /* 错题卡片基础样式 */
     .question-card {
       border: 1px solid #e0e0e0;
-      border-radius: 8px;
-      padding: 20px;
-      margin-bottom: 25px;
-      background-color: #fdfdfd;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 30px;
+      background-color: #ffffff;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
     }
     .question-tag {
       display: inline-block;
-      padding: 2px 8px;
-      font-size: 12px;
-      border-radius: 4px;
+      padding: 3px 10px;
+      font-size: 11px;
+      font-weight: bold;
+      border-radius: 20px;
       background-color: #e3f2fd;
       color: #0d47a1;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
+      text-transform: uppercase;
     }
     .question-tag.multi {
       background-color: #fbe9e7;
       color: #d84315;
     }
-    .ans-btn {
-      background-color: #42b983;
-      color: white;
-      border: none;
-      padding: 6px 12px;
-      border-radius: 4px;
+    .question-text {
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 1.6;
+      margin-bottom: 15px;
+    }
+    /* 交互式选项样式 */
+    .options-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin: 15px 0;
+    }
+    .option-btn {
+      text-align: left;
+      padding: 12px 20px;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      background-color: #f9f9f9;
+      font-size: 14px;
       cursor: pointer;
+      transition: all 0.2s ease;
+      outline: none;
+    }
+    .option-btn:hover {
+      background-color: #f0f0f0;
+      border-color: #b0b0b0;
+    }
+    /* 答题状态 */
+    .option-btn.correct {
+      background-color: #e8f5e9 !important;
+      border-color: #4caf50 !important;
+      color: #2e7d32 !important;
+      font-weight: bold;
+    }
+    .option-btn.wrong {
+      background-color: #ffebee !important;
+      border-color: #f44336 !important;
+      color: #c62828 !important;
+    }
+    /* 答题反馈提示 */
+    .feedback-tip {
+      font-weight: bold;
       margin-top: 10px;
+      font-size: 14px;
     }
-    .ans-btn:hover {
-      background-color: #359469;
-    }
-    .analysis-content {
-      margin-top: 15px;
-      padding-top: 15px;
-      border-top: 1px dashed #ccc;
+    .feedback-tip.correct { color: #2e7d32; }
+    .feedback-tip.wrong { color: #c62828; }
+    
+    /* 隐藏的解析区域 */
+    .analysis-container {
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 2px dashed #eee;
     }
     img {
       max-width: 100%;
       height: auto;
-      margin: 10px 0;
+      margin: 15px 0;
+      border-radius: 6px;
       border: 1px solid #eee;
     }
   </style>
 </head>
 <body>
-  <div id="app">正在加载错题本...</div>
+  <div id="app">正在加载交互式错题本...</div>
   <script>
     window.$docsify = {
       name: '⚡ 电气错题本',
       repo: '',
-      loadSidebar: true, // 启用侧边栏
+      loadSidebar: true,
       subMaxLevel: 2,
       search: {
         maxAge: 86400000,
         paths: 'auto',
-        placeholder: '搜索题目或考点...',
-        noData: '未找到相关题目',
+        placeholder: '搜索题目、知识点...',
+        noData: '没有找到相关题目',
         depth: 6
       },
       plugins: [
-        // 错题折叠与交互插件：自动把包含 [显示解析] 的部分转换成折叠按钮
+        // 核心插件：把 Markdown 的结构动态重构成带点击事件的错题交互卡片
         function(hook, vm) {
           hook.afterEach(function(html, next) {
-            let container = document.createElement('div');
-            container.innerHTML = html;
+            let tempDiv = document.createElement('div');
+            tempDiv.innerHTML = html;
             
-            let btnId = 0;
-            container.querySelectorAll('blockquote').forEach(bq => {
-              if (bq.innerText.includes('[显示解析]')) {
-                btnId++;
-                const originalContent = bq.innerHTML.replace('[显示解析]', '');
-                const interactiveHtml = `
-                  <button class="ans-btn" onclick="const el = document.getElementById('ans-${btnId}'); el.style.display = el.style.display === 'none' ? 'block' : 'none';">显示/隐藏解析</button>
-                  <div id="ans-${btnId}" class="analysis-content" style="display: none;">
-                    ${originalContent}
-                  </div>
-                `;
-                bq.innerHTML = interactiveHtml;
-                bq.className = 'question-card';
+            // 找到所有 question-card
+            tempDiv.querySelectorAll('.question-card').forEach((card, cardIdx) => {
+              const tagSpan = card.querySelector('.question-tag');
+              const isMulti = tagSpan && tagSpan.innerText.includes('多选');
+              
+              // 提取选项文本
+              const liElements = card.querySelectorAll('ul li');
+              let optionsHtml = '<div class="options-group">';
+              
+              liElements.forEach((li) => {
+                // 选项通常是 "A. xxx" 或 "$A. xxx$" 格式
+                const text = li.innerHTML;
+                const match = text.match(/^\s*([A-D])\s*[\.、]?\s*(.*)/i);
+                if (match) {
+                  const letter = match[1].toUpperCase();
+                  const content = match[2];
+                  optionsHtml += `
+                    <button class="option-btn" data-letter="${letter}" onclick="checkAnswer(this, '${cardIdx}', ${isMulti})">
+                      <strong>${letter}.</strong> ${content}
+                    </button>
+                  `;
+                }
+              });
+              optionsHtml += '</div><div id="feedback-' + cardIdx + '" class="feedback-tip"></div>';
+              
+              // 移除原来的 UL 列表，换成我们生成的交互按钮组
+              const ul = card.querySelector('ul');
+              if (ul) {
+                ul.outerHTML = optionsHtml;
+              }
+              
+              // 寻找紧跟在 card 后的解析引用块
+              let nextEl = card.nextElementSibling;
+              while (nextEl && nextEl.tagName !== 'BLOCKQUOTE') {
+                nextEl = nextEl.nextElementSibling;
+              }
+              
+              if (nextEl && nextEl.tagName === 'BLOCKQUOTE' && nextEl.innerText.includes('[显示解析]')) {
+                const analysisInner = nextEl.innerHTML.replace('[显示解析]', '');
+                // 提取正确答案字母
+                const ansMatch = analysisInner.match(/正确答案：\s*<strong>([A-D]+)<\/strong>/i) 
+                                 || analysisInner.match(/正确答案：\s*([A-D]+)/i);
+                const correctAns = ansMatch ? ansMatch[1].trim().toUpperCase() : '';
+                
+                // 给卡片附加上正确答案数据属性
+                card.setAttribute('data-correct', correctAns);
+                
+                // 将解析内容包装在隐藏容器中，放入卡片内部
+                const analysisDiv = document.createElement('div');
+                analysisDiv.id = `analysis-${cardIdx}`;
+                analysisDiv.className = 'analysis-container';
+                analysisDiv.style.display = 'none';
+                analysisDiv.innerHTML = analysisInner;
+                
+                card.appendChild(analysisDiv);
+                // 销毁原来页面上的引用块
+                nextEl.remove();
               }
             });
-            next(container.innerHTML);
+            next(tempDiv.innerHTML);
           });
         }
       ]
     }
+
+    // 全局答题交互判断函数
+    function checkAnswer(btn, cardIdx, isMulti) {
+      const card = btn.closest('.question-card');
+      const correctAnswers = card.getAttribute('data-correct'); // 例如 "C" 或 "AB"
+      const feedback = document.getElementById(`feedback-${cardIdx}`);
+      const analysis = document.getElementById(`analysis-${cardIdx}`);
+      
+      if (!isMulti) {
+        // --- 单选题逻辑 ---
+        const selectedLetter = btn.getAttribute('data-letter');
+        const allButtons = card.querySelectorAll('.option-btn');
+        
+        // 清除本题其他按钮的状态
+        allButtons.forEach(b => b.className = 'option-btn');
+        
+        if (correctAnswers.includes(selectedLetter)) {
+          btn.classList.add('correct');
+          feedback.innerHTML = '🎉 回答正确！已为你展开解析。';
+          feedback.className = 'feedback-tip correct';
+          // 展开解析
+          analysis.style.display = 'block';
+        } else {
+          btn.classList.add('wrong');
+          feedback.innerHTML = '❌ 答案错误，再试一次吧！';
+          feedback.className = 'feedback-tip wrong';
+          analysis.style.display = 'none';
+        }
+      } else {
+        // --- 多选题逻辑 ---
+        btn.classList.toggle('correct'); // 多选允许来回切换选中状态
+        
+        const selectedButtons = card.querySelectorAll('.option-btn.correct');
+        const selectedLetters = Array.from(selectedButtons).map(b => b.getAttribute('data-letter')).sort().join('');
+        const sortedCorrect = correctAnswers.split('').sort().join('');
+        
+        if (selectedLetters === sortedCorrect) {
+          feedback.innerHTML = '🎉 恭喜你，多选题全部选对！';
+          feedback.className = 'feedback-tip correct';
+          analysis.style.display = 'block';
+        } else {
+          feedback.innerHTML = '🧐 选项还未完全找对哦，继续加油！';
+          feedback.className = 'feedback-tip wrong';
+          analysis.style.display = 'none';
+        }
+      }
+    }
   </script>
-  <!-- Docsify 核心与插件 -->
   <script src="//cdn.jsdelivr.net/npm/docsify@4"></script>
   <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/search.min.js"></script>
 </body>
