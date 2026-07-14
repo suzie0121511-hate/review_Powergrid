@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>我的电气工程错题本</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta name="description" content="Personal Mistake Notebook">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+  <!-- 引入主题样式 -->
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify@4/lib/themes/vue.css">
+  <style>
+    /* 自定义错题卡片样式，用于复习功能 */
+    .question-card {
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 25px;
+      background-color: #fdfdfd;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    }
+    .question-tag {
+      display: inline-block;
+      padding: 2px 8px;
+      font-size: 12px;
+      border-radius: 4px;
+      background-color: #e3f2fd;
+      color: #0d47a1;
+      margin-bottom: 10px;
+    }
+    .question-tag.multi {
+      background-color: #fbe9e7;
+      color: #d84315;
+    }
+    .ans-btn {
+      background-color: #42b983;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    .ans-btn:hover {
+      background-color: #359469;
+    }
+    .analysis-content {
+      margin-top: 15px;
+      padding-top: 15px;
+      border-top: 1px dashed #ccc;
+    }
+    img {
+      max-width: 100%;
+      height: auto;
+      margin: 10px 0;
+      border: 1px solid #eee;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">正在加载错题本...</div>
+  <script>
+    window.$docsify = {
+      name: '⚡ 电气错题本',
+      repo: '',
+      loadSidebar: true, // 启用侧边栏
+      subMaxLevel: 2,
+      search: {
+        maxAge: 86400000,
+        paths: 'auto',
+        placeholder: '搜索题目或考点...',
+        noData: '未找到相关题目',
+        depth: 6
+      },
+      plugins: [
+        // 错题折叠与交互插件：自动把包含 [显示解析] 的部分转换成折叠按钮
+        function(hook, vm) {
+          hook.afterEach(function(html, next) {
+            let container = document.createElement('div');
+            container.innerHTML = html;
+            
+            let btnId = 0;
+            container.querySelectorAll('blockquote').forEach(bq => {
+              if (bq.innerText.includes('[显示解析]')) {
+                btnId++;
+                const originalContent = bq.innerHTML.replace('[显示解析]', '');
+                const interactiveHtml = `
+                  <button class="ans-btn" onclick="const el = document.getElementById('ans-${btnId}'); el.style.display = el.style.display === 'none' ? 'block' : 'none';">显示/隐藏解析</button>
+                  <div id="ans-${btnId}" class="analysis-content" style="display: none;">
+                    ${originalContent}
+                  </div>
+                `;
+                bq.innerHTML = interactiveHtml;
+                bq.className = 'question-card';
+              }
+            });
+            next(container.innerHTML);
+          });
+        }
+      ]
+    }
+  </script>
+  <!-- Docsify 核心与插件 -->
+  <script src="//cdn.jsdelivr.net/npm/docsify@4"></script>
+  <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/search.min.js"></script>
+</body>
+</html>
