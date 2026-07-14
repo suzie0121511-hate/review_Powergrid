@@ -152,32 +152,27 @@
       loadSidebar: true,
       subMaxLevel: 2,
       search: 'auto',
+      basePath: './', // ⚡ 新增强制相对路径控制，彻底阻断 404 寻找不到侧边栏的问题！
       plugins: [
         function(hook, vm) {
           hook.afterEach(function(html, next) {
-            // 创建一个虚拟容器来解析原始 Markdown 渲染出的 HTML
             let tempDiv = document.createElement('div');
             tempDiv.innerHTML = html;
             
             let rawCards = Array.from(tempDiv.querySelectorAll('.question-card'));
             
-            // 如果这个页面根本没有题目卡片（比如是主页介绍），就原样展示
             if (rawCards.length === 0) {
               next(html);
               return;
             }
             
             let parsedQuestions = [];
-            
-            // 硬编码绑定这 5 道题的正确答案，彻底避开正则表达式提取出错的风险！
             const hardcodedAnswers = ['C', 'D', 'C', 'B', 'B'];
             
             rawCards.forEach((card, idx) => {
-              // 寻找紧跟在当前 card 后面的 blockquote 解析块
               let nextEl = card.nextElementSibling;
               let analysisInner = '暂无详细解析';
               
-              // 往后找最多3个元素，直到找到 blockquote 
               for (let i = 0; i < 5; i++) {
                 if (nextEl) {
                   if (nextEl.tagName === 'BLOCKQUOTE') {
@@ -187,20 +182,17 @@
                   }
                   let current = nextEl;
                   nextEl = nextEl.nextElementSibling;
-                  // 如果中间有干扰的空段落或标题，顺手移除
                   if (current.tagName === 'HR' || current.tagName.startsWith('H')) {
                     current.remove();
                   }
                 }
               }
               
-              // 清理 card 内部多余的列表元素
               let ul = card.querySelector('ul');
               if (ul) ul.remove();
               let spanTag = card.querySelector('.question-tag');
               if (spanTag) spanTag.remove();
               
-              // 决定该题的最终答案
               let finalAns = hardcodedAnswers[idx] || 'A';
               
               parsedQuestions.push({
@@ -210,7 +202,6 @@
               });
             });
             
-            // Fisher-Yates 随机打乱算法
             for (let i = parsedQuestions.length - 1; i > 0; i--) {
               const j = Math.floor(Math.random() * (i + 1));
               [parsedQuestions[i], parsedQuestions[j]] = [parsedQuestions[j], parsedQuestions[i]];
@@ -219,7 +210,6 @@
             globalQuestions = parsedQuestions;
             currentQuestionIdx = 0;
             
-            // 构建纯净的刷题架子
             let quizWrapper = document.createElement('div');
             quizWrapper.className = 'quiz-wrapper';
             quizWrapper.innerHTML = `
@@ -231,7 +221,6 @@
             next(quizWrapper.outerHTML);
           });
 
-          // HTML 框架塞进页面后，立刻开始绘制第一题
           hook.doneEach(function() {
             if (globalQuestions.length > 0) {
               renderActiveQuestion();
@@ -299,7 +288,7 @@
       
       if (correctAnswers === selectedLetter) {
         btn.classList.add('correct');
-        feedback.innerHTML = '🎉 回答正确！';
+        feedback.innerHTML = '🎉 回报正确！';
         feedback.className = 'feedback-tip correct';
         analysisBox.style.display = 'block';
         nextBtn.style.display = 'block';
