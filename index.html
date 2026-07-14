@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>⚡ 我的电气工程错题本</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <style>
     :root {
       --primary-color: #42b983;
@@ -16,13 +16,17 @@
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       background-color: var(--bg-color);
       color: var(--text-main);
       display: flex;
       min-height: 100vh;
+      overflow-x: hidden;
     }
-    /* 侧边栏样式 */
+    
+    /* ==========================================================================
+       1. 侧边栏 (默认电脑端布局)
+       ========================================================================== */
     .sidebar {
       width: 260px;
       background-color: #1a202c;
@@ -38,9 +42,6 @@
       padding: 10px 24px 20px;
       border-bottom: 1px solid #2d3748;
       color: var(--primary-color);
-      display: flex;
-      align-items: center;
-      gap: 8px;
     }
     .menu-list { list-style: none; margin-top: 15px; }
     .menu-item {
@@ -59,7 +60,10 @@
       border-left-color: var(--primary-color);
       font-weight: bold;
     }
-    /* 主显示区 */
+
+    /* ==========================================================================
+       2. 主显示区 (默认电脑端布局)
+       ========================================================================== */
     .main-content {
       flex-grow: 1;
       padding: 40px;
@@ -126,7 +130,7 @@
       border: 1px solid #edf2f7;
       border-radius: 8px;
     }
-    /* 选项组 */
+    /* 选项 */
     .options-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -158,7 +162,6 @@
       border-color: #e53e3e !important;
       color: #9b2c2c !important;
     }
-    /* 底部反馈及按钮 */
     .footer-zone {
       display: flex;
       flex-direction: column;
@@ -184,9 +187,7 @@
     }
     .action-btn:hover {
       background-color: var(--primary-hover);
-      transform: translateY(-1px);
     }
-    /* 解析 */
     .analysis-box {
       margin-top: 25px;
       padding-top: 25px;
@@ -198,11 +199,84 @@
       color: var(--text-muted);
       padding: 40px 0;
     }
+
+    /* ==========================================================================
+       📱 3. 手机端极速拯救响应式样式 (屏幕小于 768px 时自动生效)
+       ========================================================================== */
+    @media (max-width: 768px) {
+      body {
+        flex-direction: column; /* 垂直排列：上菜单，下内容 */
+      }
+      
+      /* 侧边栏变顶部滚动导航栏 */
+      .sidebar {
+        width: 100%;
+        padding: 10px 0 0 0;
+        border-bottom: 1px solid #2d3748;
+      }
+      .sidebar-title {
+        font-size: 16px;
+        padding: 5px 16px 8px;
+        border-bottom: none;
+        text-align: center;
+      }
+      .menu-list {
+        display: flex;
+        overflow-x: auto; /* 允许横向手势划动 */
+        white-space: nowrap; /* 强行一行排开 */
+        margin-top: 0;
+        padding: 0 10px;
+        -webkit-overflow-scrolling: touch; /* 让苹果手机滑动极其丝滑 */
+      }
+      /* 隐藏横向滚动条，显得干净 */
+      .menu-list::-webkit-scrollbar {
+        display: none;
+      }
+      .menu-item {
+        padding: 10px 16px;
+        font-size: 13px;
+        display: inline-block;
+        border-left: none;
+        border-bottom: 3px solid transparent; /* 选中状态改为底部高亮线 */
+        flex-shrink: 0;
+      }
+      .menu-item:hover, .menu-item.active {
+        background-color: transparent;
+      }
+      .menu-item.active {
+        border-bottom-color: var(--primary-color);
+        color: #fff;
+      }
+
+      /* 缩小主体内容的边距，让卡片撑满手机屏 */
+      .main-content {
+        padding: 15px;
+      }
+      .card {
+        padding: 20px 15px;
+        border-radius: 12px;
+      }
+      .title {
+        font-size: 16px;
+      }
+      
+      /* 缩紧选项按钮间距，适配手机触控 */
+      .options-grid {
+        gap: 10px;
+        margin: 20px 0;
+      }
+      .option-btn {
+        padding: 12px 0;
+        font-size: 18px;
+        border-radius: 8px;
+      }
+    }
   </style>
+  
+  <script src="questions.js" defer></script>
 </head>
 <body>
 
-  <!-- 1. 左侧硬核分类导航栏 -->
   <div class="sidebar">
     <div class="sidebar-title">⚡ 电气错题本</div>
     <ul class="menu-list">
@@ -217,61 +291,56 @@
     </ul>
   </div>
 
-  <!-- 2. 右侧主体刷题区 -->
   <div class="main-content">
     <div class="quiz-container">
-      <!-- 进度条 -->
       <div class="progress-wrapper">
         <div class="progress-bar-bg">
           <div id="progress-fill" class="progress-bar-fill"></div>
         </div>
         <div id="progress-txt" class="progress-text">进度：0% (0/0)</div>
       </div>
-
-      <!-- 题目展示卡片 -->
-      <div id="quiz-card" class="card">
-        <!-- 动态渲染内容 -->
-      </div>
+      <div id="quiz-card" class="card"></div>
     </div>
   </div>
 
-  <!-- 3. 引入题库脚本 -->
-  <script src="questions.js"></script>
-
   <script>
-    // ⚡ 自动化配置：自动获取当前 GitHub 仓库的用户名和仓库名，完美适配 jsDelivr 极速 CDN 通道！
-    const pathSegments = window.location.pathname.split('/');
-    const repoName = pathSegments[1] || 'review_Powergrid';
-    const userName = window.location.hostname.split('.')[0] || 'suzie0121511-hate';
-    const cdnBase = `https://cdn.jsdelivr.net/gh/${userName}/${repoName}@main/`;
+    const cdnBase = "https://cdn.jsdelivr.net/gh/suzie0121511-hate/review_Powergrid@main/";
 
     let activeQuestions = [];
     let currentIdx = 0;
 
-    // 初始化加载“电路”板块
-    window.onload = function() {
-      loadCategory('circuit');
-    };
+    document.addEventListener("DOMContentLoaded", function() {
+      if (typeof quizData === "undefined") {
+        setTimeout(initApp, 500);
+      } else {
+        initApp();
+      }
+    });
 
-    // 切换科目板块
+    function initApp() {
+      loadCategory('circuit');
+    }
+
     function switchCategory(catKey, menuEl) {
       document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
       menuEl.classList.add('active');
       loadCategory(catKey);
     }
 
-    // 加载对应科目题目并洗牌打乱
     function loadCategory(catKey) {
+      if (typeof quizData === "undefined") {
+        showEmptyState();
+        return;
+      }
+      
       const rawData = quizData[catKey] || [];
       if (rawData.length === 0) {
         showEmptyState();
         return;
       }
       
-      // 深度拷贝题目数据，避免破坏原始题库
       activeQuestions = JSON.parse(JSON.stringify(rawData));
       
-      // 🔮 Fisher-Yates 完美打乱算法
       for (let i = activeQuestions.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [activeQuestions[i], activeQuestions[j]] = [activeQuestions[j], activeQuestions[i]];
@@ -281,12 +350,9 @@
       renderQuestion();
     }
 
-    // 渲染当题界面
     function renderQuestion() {
       const card = document.getElementById('quiz-card');
       const q = activeQuestions[currentIdx];
-      
-      // CDN 图片极速加速链接合成
       const imgUrl = `${cdnBase}${q.image}`;
 
       card.innerHTML = `
@@ -315,7 +381,6 @@
       updateProgress();
     }
 
-    // 判断对错
     function checkAnswer(btn) {
       const q = activeQuestions[currentIdx];
       const feedback = document.getElementById('feedback-txt');
@@ -324,7 +389,7 @@
       const allButtons = document.querySelectorAll('.option-btn');
       
       const selected = btn.getAttribute('data-letter');
-      allButtons.forEach(b => b.className = 'option-btn'); // 复位颜色
+      allButtons.forEach(b => b.className = 'option-btn');
 
       if (selected === q.answer) {
         btn.classList.add('correct');
@@ -339,13 +404,11 @@
       }
     }
 
-    // 下一题
     function goNext() {
       currentIdx++;
       if (currentIdx < activeQuestions.length) {
         renderQuestion();
       } else {
-        // 通关啦
         document.getElementById('progress-fill').style.width = '100%';
         document.getElementById('progress-txt').innerText = `进度：100% (${activeQuestions.length}/${activeQuestions.length})`;
         document.getElementById('quiz-card').innerHTML = `
@@ -358,7 +421,6 @@
       }
     }
 
-    // 更新进度
     function updateProgress() {
       const fill = document.getElementById('progress-fill');
       const txt = document.getElementById('progress-txt');
@@ -367,14 +429,13 @@
       txt.innerText = `当前进度：${percent}% (${currentIdx}/${activeQuestions.length} 题已完成)`;
     }
 
-    // 无题目空状态显示
     function showEmptyState() {
       document.getElementById('progress-fill').style.width = '0%';
       document.getElementById('progress-txt').innerText = `进度：0% (0/0)`;
       document.getElementById('quiz-card').innerHTML = `
         <div class="empty-state">
           <h3>📭 当前板块暂无错题</h3>
-          <p style="margin-top: 10px; font-size: 14px;">你可以通过修改 <code>questions.js</code> 往里面塞入错题数据哦！</p>
+          <p style="margin-top: 10px; font-size: 14px;">你可以修改 <code>questions.js</code> 往里面塞入错题数据哦！</p>
         </div>
       `;
     }
