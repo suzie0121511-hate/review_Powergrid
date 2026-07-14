@@ -5,18 +5,375 @@
   <title>我的电气工程错题本</title>
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
-  <!-- 干净的官方主题，没有多余样式 -->
+  <!-- 引入简洁现代的 Docsify 主题 -->
   <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify@4/lib/themes/vue.css">
+  <style>
+    /* 全局及刷题模式样式 */
+    .quiz-wrapper {
+      max-width: 800px;
+      margin: 30px auto;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    /* 动态进度条 */
+    .progress-container {
+      width: 100%;
+      background-color: #f0f0f0;
+      border-radius: 10px;
+      margin-bottom: 8px;
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+    .progress-bar {
+      height: 10px;
+      background: linear-gradient(90deg, #42b983, #3df2a5);
+      width: 0%;
+      transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      border-radius: 10px;
+    }
+    .progress-text {
+      font-size: 13px;
+      color: #666;
+      margin-bottom: 25px;
+      text-align: right;
+      font-weight: bold;
+    }
+    /* 题目卡片 */
+    .question-card {
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 28px;
+      background-color: #ffffff;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.03);
+      transition: transform 0.3s;
+    }
+    .question-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      border-bottom: 1px solid #edf2f7;
+      padding-bottom: 12px;
+    }
+    .question-tag {
+      display: inline-block;
+      padding: 4px 12px;
+      font-size: 11px;
+      font-weight: bold;
+      border-radius: 20px;
+      background-color: #ebf8ff;
+      color: #2b6cb0;
+      text-transform: uppercase;
+    }
+    .question-tag.multi {
+      background-color: #fff5f5;
+      color: #c53030;
+    }
+    .question-index {
+      font-size: 13px;
+      color: #a0aec0;
+      font-weight: bold;
+    }
+    /* 极简 ABCD 选项组 */
+    .options-group {
+      display: flex;
+      justify-content: space-between;
+      gap: 15px;
+      margin: 30px 0;
+    }
+    .option-btn {
+      flex: 1;
+      text-align: center;
+      padding: 18px 0;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      background-color: #f7fafc;
+      font-size: 20px;
+      font-weight: 800;
+      color: #4a5568;
+      cursor: pointer;
+      transition: transform 0.1s, border-color 0.2s, background-color 0.2s;
+    }
+    .option-btn:hover {
+      background-color: #edf2f7;
+      border-color: #cbd5e0;
+    }
+    .option-btn:active {
+      transform: scale(0.95);
+    }
+    /* 答题状态 */
+    .option-btn.correct {
+      background-color: #f0fff4 !important;
+      border-color: #38a169 !important;
+      color: #276749 !important;
+    }
+    .option-btn.wrong {
+      background-color: #fff5f5 !important;
+      border-color: #e53e3e !important;
+      color: #9b2c2c !important;
+    }
+    /* 脚部和反馈 */
+    .quiz-footer {
+      margin-top: 25px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+    }
+    .feedback-tip {
+      font-weight: bold;
+      font-size: 16px;
+      min-height: 24px;
+      transition: all 0.2s;
+    }
+    .feedback-tip.correct { color: #38a169; }
+    .feedback-tip.wrong { color: #e53e3e; }
+    
+    .nav-btn {
+      background-color: #42b983;
+      color: white;
+      border: none;
+      padding: 12px 30px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(66, 185, 131, 0.2);
+      transition: all 0.2s;
+    }
+    .nav-btn:hover {
+      background-color: #359469;
+      transform: translateY(-1px);
+    }
+    /* 答案和解析区域 */
+    .analysis-container {
+      margin-top: 30px;
+      padding-top: 25px;
+      border-top: 2px dashed #e2e8f0;
+      width: 100%;
+      line-height: 1.6;
+    }
+    img {
+      max-width: 100%;
+      height: auto;
+      margin: 20px auto;
+      border-radius: 8px;
+      border: 1px solid #edf2f7;
+      display: block;
+    }
+  </style>
 </head>
 <body>
-  <div id="app">正在加载错题本...</div>
+  <div id="app">正在准备刷题系统...</div>
   <script>
+    // 1. 全局状态存储
+    let globalQuestions = [];
+    let currentQuestionIdx = 0;
+
     window.$docsify = {
       name: '⚡ 电气错题本',
-      loadSidebar: true, // 启用侧边栏
-      subMaxLevel: 2
+      repo: '',
+      loadSidebar: true,
+      subMaxLevel: 2,
+      search: 'auto',
+      basePath: './', // 强制相对路由，阻断 404
+      plugins: [
+        function(hook, vm) {
+          hook.afterEach(function(html, next) {
+            // 创建虚拟容器解析 Markdown 转换出来的 HTML
+            let tempDiv = document.createElement('div');
+            tempDiv.innerHTML = html;
+            
+            let rawCards = Array.from(tempDiv.querySelectorAll('.question-card'));
+            
+            // 如果页面里没有任何题目卡片（比如是主页介绍），直接放行
+            if (rawCards.length === 0) {
+              next(html);
+              return;
+            }
+            
+            let parsedQuestions = [];
+            // 硬编码绑定这 5 道题的正确答案，避免正则抓取失误
+            const hardcodedAnswers = ['C', 'D', 'C', 'B', 'B'];
+            
+            rawCards.forEach((card, idx) => {
+              // --- 💡 核心黑科技：图片全自动 CDN 极速加载重写 ---
+              card.querySelectorAll('img').forEach(img => {
+                const rawSrc = img.getAttribute('src');
+                // 如果是本地图片路径（例如 circuit-01.png），自动为其套上 jsDelivr 极速 CDN 通道
+                if (rawSrc && !rawSrc.startsWith('http') && !rawSrc.startsWith('//')) {
+                  const cleanSrc = rawSrc.replace(/^(\.\/|images\/)/, ''); // 清理前缀
+                  img.setAttribute('src', `https://cdn.jsdelivr.net/gh/suzie0121511-hate/review_Powergrid@main/${cleanSrc}`);
+                }
+              });
+
+              // 提取解析 blockquote
+              let nextEl = card.nextElementSibling;
+              let analysisInner = '暂无详细解析';
+              
+              for (let i = 0; i < 5; i++) {
+                if (nextEl) {
+                  if (nextEl.tagName === 'BLOCKQUOTE') {
+                    // 同步加速解析块内部可能存在的图片
+                    nextEl.querySelectorAll('img').forEach(img => {
+                      const rawSrc = img.getAttribute('src');
+                      if (rawSrc && !rawSrc.startsWith('http') && !rawSrc.startsWith('//')) {
+                        const cleanSrc = rawSrc.replace(/^(\.\/|images\/)/, '');
+                        img.setAttribute('src', `https://cdn.jsdelivr.net/gh/suzie0121511-hate/review_Powergrid@main/${cleanSrc}`);
+                      }
+                    });
+                    analysisInner = nextEl.innerHTML.replace('[显示解析]', '');
+                    nextEl.remove();
+                    break;
+                  }
+                  let current = nextEl;
+                  nextEl = nextEl.nextElementSibling;
+                  if (current.tagName === 'HR' || current.tagName.startsWith('H')) {
+                    current.remove();
+                  }
+                }
+              }
+              
+              // 剥离原有的选项 UL、分类标签等，保留纯净题干和极速图
+              let ul = card.querySelector('ul');
+              if (ul) ul.remove();
+              let spanTag = card.querySelector('.question-tag');
+              if (spanTag) spanTag.remove();
+              
+              let finalAns = hardcodedAnswers[idx] || 'A';
+              
+              parsedQuestions.push({
+                cardInnerHtml: card.innerHTML,
+                correctAns: finalAns,
+                analysisHtml: analysisInner
+              });
+            });
+            
+            // 2. Fisher-Yates 完美打乱算法，保证完全随机和平均不重复
+            for (let i = parsedQuestions.length - 1; i > 0; i--) {
+              const j = Math.floor(Math.random() * (i + 1));
+              [parsedQuestions[i], parsedQuestions[j]] = [parsedQuestions[j], parsedQuestions[i]];
+            }
+            
+            // 存入全局变量
+            globalQuestions = parsedQuestions;
+            currentQuestionIdx = 0;
+            
+            // 3. 构建崭新、支持进度条的刷题基础结构
+            let quizWrapper = document.createElement('div');
+            quizWrapper.className = 'quiz-wrapper';
+            quizWrapper.innerHTML = `
+              <div class="progress-container"><div id="quiz-progress-bar" class="progress-bar"></div></div>
+              <div id="quiz-progress-text" class="progress-text">进度加载中...</div>
+              <div id="active-question-zone"></div>
+            `;
+            
+            next(quizWrapper.outerHTML);
+          });
+
+          // 页面加载或切换科目后，立即执行第一题渲染
+          hook.doneEach(function() {
+            if (globalQuestions.length > 0) {
+              renderActiveQuestion();
+            }
+          });
+        }
+      ]
+    };
+
+    // 渲染当前题目
+    function renderActiveQuestion() {
+      const zone = document.getElementById('active-question-zone');
+      if (!zone) return;
+      
+      const q = globalQuestions[currentQuestionIdx];
+      
+      let html = `
+        <div class="question-card">
+          <div class="question-header">
+            <span class="question-tag">单选题</span>
+            <span class="question-index">第 ${currentQuestionIdx + 1} / ${globalQuestions.length} 题</span>
+          </div>
+          ${q.cardInnerHtml}
+          <div class="options-group">
+            <button class="option-btn" data-letter="A" onclick="checkAnswer(this)">A</button>
+            <button class="option-btn" data-letter="B" onclick="checkAnswer(this)">B</button>
+            <button class="option-btn" data-letter="C" onclick="checkAnswer(this)">C</button>
+            <button class="option-btn" data-letter="D" onclick="checkAnswer(this)">D</button>
+          </div>
+          <div class="quiz-footer">
+            <div id="quiz-feedback" class="feedback-tip"></div>
+            <button id="quiz-next-btn" class="nav-btn" style="display: none;" onclick="goToNextQuestion()">下一题 ➔</button>
+          </div>
+          <div id="quiz-analysis-box" class="analysis-container" style="display: none;">
+            <strong>✨ 标准答案：${q.correctAns}</strong><br><br>
+            ${q.analysisHtml}
+          </div>
+        </div>
+      `;
+      
+      zone.innerHTML = html;
+      updateProgressBar();
+    }
+
+    // 实时更新进度条
+    function updateProgressBar() {
+      const pBar = document.getElementById('quiz-progress-bar');
+      const pText = document.getElementById('quiz-progress-text');
+      if (!pBar || !pText) return;
+      
+      const percentage = Math.round((currentQuestionIdx / globalQuestions.length) * 100);
+      pBar.style.width = `${percentage}%`;
+      pText.innerText = `当前进度：${percentage}% (${currentQuestionIdx}/${globalQuestions.length} 题已完成)`;
+    }
+
+    // 答题校验
+    function checkAnswer(btn) {
+      const correctAnswers = globalQuestions[currentQuestionIdx].correctAns;
+      const feedback = document.getElementById('quiz-feedback');
+      const nextBtn = document.getElementById('quiz-next-btn');
+      const analysisBox = document.getElementById('quiz-analysis-box');
+      const zone = document.getElementById('active-question-zone');
+      
+      const selectedLetter = btn.getAttribute('data-letter');
+      const allButtons = zone.querySelectorAll('.option-btn');
+      
+      // 清理其他按钮状态
+      allButtons.forEach(b => b.className = 'option-btn');
+      
+      if (correctAnswers === selectedLetter) {
+        btn.classList.add('correct');
+        feedback.innerHTML = '🎉 回答正确！';
+        feedback.className = 'feedback-tip correct';
+        analysisBox.style.display = 'block';
+        nextBtn.style.display = 'block'; // 做对后才允许切换到下一题
+      } else {
+        btn.classList.add('wrong');
+        feedback.innerHTML = '❌ 答案错误，再换个选项试试！';
+        feedback.className = 'feedback-tip wrong';
+      }
+    }
+
+    // 切换至下一题
+    function goToNextQuestion() {
+      currentQuestionIdx++;
+      if (currentQuestionIdx < globalQuestions.length) {
+        renderActiveQuestion();
+        window.scrollTo({ top: 0, behavior: 'smooth' }); // 平滑滚到顶部
+      } else {
+        // 通关逻辑
+        document.getElementById('quiz-progress-bar').style.width = '100%';
+        document.getElementById('quiz-progress-text').innerText = `当前进度：100% (${globalQuestions.length}/${globalQuestions.length} 题已完成)`;
+        document.getElementById('active-question-zone').innerHTML = `
+          <div class="question-card" style="text-align: center; padding: 50px 20px;">
+            <h2 style="color: #42b983; margin-bottom: 15px;">🎉 完美通关！</h2>
+            <p style="font-size: 16px; color: #4a5568;">你已经成功攻克当前板块的所有错题！</p>
+            <button class="nav-btn" style="margin-top: 25px;" onclick="location.reload()">重新打乱顺序再练一次</button>
+          </div>
+        `;
+      }
     }
   </script>
+  <!-- Docsify JS 核心 -->
   <script src="//cdn.jsdelivr.net/npm/docsify@4"></script>
 </body>
 </html>
