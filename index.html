@@ -1,6 +1,21 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-<head>
+<!-- 引入 MathJax 用于完美渲染 LaTeX 数学公式 -->
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      },
+      svg: {
+        fontCache: 'global'
+      }
+    };
+  </script>
+  <script type="text/javascript" id="MathJax-script" async
+    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js">
+  </script>
+  <head>
   <meta charset="UTF-8">
   <title>⚡ 我的电气工程错题本</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
