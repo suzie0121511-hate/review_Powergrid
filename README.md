@@ -17,7 +17,7 @@
 </div>
 
 > [显示解析]
-> **正确答案：C**
+> 正确答案：C
 > 
 > **核心考点**：复阻抗三角形与无功功率计算
 > 
@@ -43,7 +43,7 @@
 </div>
 
 > [显示解析]
-> **正确答案：D**
+> 正确答案：D
 > 
 > **核心考点**：同名端判定与互感消去法
 > 
@@ -62,15 +62,15 @@
   <p>图示电路的戴维南等效电路参数为（  ）。</p>
   <img src="circuit-03.png" alt="题目图片">
   <ul>
-    <li>A. $5\angle 0^\circ\text{ V},\, j6\Omega$</li>
-    <li>B. $10\angle 0^\circ\text{ V},\, j4\Omega$</li>
-    <li>C. $10\angle 0^\circ\text{ V},\, j6\Omega$</li>
-    <li>D. $5\angle 90^\circ\text{ V},\, j6\Omega$</li>
+    <li>A. A</li>
+    <li>B. B</li>
+    <li>C. C</li>
+    <li>D. D</li>
   </ul>
 </div>
 
 > [显示解析]
-> **正确答案：暂定 C / D（视图中互感端点判定）**
+> 正确答案：C
 > 
 > **核心考点**：含互感电路的开路电压与输入阻抗计算
 > 
@@ -87,15 +87,15 @@
   <p>图示电路中，$R=X_C=X_L$，则有（  ）。</p>
   <img src="circuit-04.png" alt="题目图片">
   <ul>
-    <li>A. $U=U_s$</li>
-    <li>B. $U=0$</li>
-    <li>C. $I = I_L + I_C$</li>
-    <li>D. $I = \infty$</li>
+    <li>A. A</li>
+    <li>B. B</li>
+    <li>C. C</li>
+    <li>D. D</li>
   </ul>
 </div>
 
 > [显示解析]
-> **正确答案：B**
+> 正确答案：B
 > 
 > **核心考点**：串联谐振特征
 > 
@@ -111,18 +111,18 @@
 
 <div class="question-card">
   <span class="question-tag">单选题</span>
-  <p>电路如图所示，当在 AB 间接入 $8\Omega$ 电阻时，其功率为（  ），两个电源发出的功率（  ）。</p>
+  <p>电路如图所示，当在 AB 间接入 $8\Omega$ 电储时，其功率为（  ），两个电源发出的功率（  ）。</p>
   <img src="circuit-05.png" alt="题目图片">
   <ul>
-    <li>A. 0W，增加</li>
-    <li>B. 0W，不变</li>
-    <li>C. 4W，减小</li>
-    <li>D. 10W，不变</li>
+    <li>A. 0W</li>
+    <li>B. 0W</li>
+    <li>C. 4W</li>
+    <li>D. 10W</li>
   </ul>
 </div>
 
 > [显示解析]
-> **正确答案：B**
+> 正确答案：B
 > 
 > **核心考点**：电位与平衡状态分析、戴维南定理等效边界
 > 
