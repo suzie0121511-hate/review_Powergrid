@@ -7,7 +7,7 @@
 <div class="question-card">
   <span class="question-tag">单选题</span>
   <p>当 3A 电流通过复阻抗模为 50Ω，R=30Ω 的感性用电设备时，该设备与电源交换的功率是（  ）。</p>
-  <img src="images/屏幕截图 2026-07-14 192921.png" alt="题目图片">
+  <img src="circuit-01.png" alt="题目图片">
   <ul>
     <li>A. 120var</li>
     <li>B. 240var</li>
@@ -33,7 +33,7 @@
 <div class="question-card">
   <span class="question-tag">单选题</span>
   <p>图示一端口网络的等效电感为（  ）。</p>
-  <img src="images/屏幕截图 2026-07-14 192539.png" alt="题目图片">
+  <img src="circuit-02.png" alt="题目图片">
   <ul>
     <li>A. 11H</li>
     <li>B. 9H</li>
@@ -60,7 +60,7 @@
 <div class="question-card">
   <span class="question-tag">单选题</span>
   <p>图示电路的戴维南等效电路参数为（  ）。</p>
-  <img src="images/屏幕截图 2026-07-14 192434.png" alt="题目图片">
+  <img src="circuit-03.png" alt="题目图片">
   <ul>
     <li>A. $5\angle 0^\circ\text{ V},\, j6\Omega$</li>
     <li>B. $10\angle 0^\circ\text{ V},\, j4\Omega$</li>
@@ -85,7 +85,7 @@
 <div class="question-card">
   <span class="question-tag">单选题</span>
   <p>图示电路中，$R=X_C=X_L$，则有（  ）。</p>
-  <img src="images/屏幕截图 2026-07-14 192201.png" alt="题目图片">
+  <img src="circuit-04.png" alt="题目图片">
   <ul>
     <li>A. $U=U_s$</li>
     <li>B. $U=0$</li>
@@ -112,10 +112,10 @@
 <div class="question-card">
   <span class="question-tag">单选题</span>
   <p>电路如图所示，当在 AB 间接入 $8\Omega$ 电阻时，其功率为（  ），两个电源发出的功率（  ）。</p>
-  <img src="images/屏幕截图 2026-07-14 191758.jpg" alt="题目图片">
+  <img src="circuit-05.png" alt="题目图片">
   <ul>
     <li>A. 0W，增加</li>
-    <li>|B. 0W，不变</li>
+    <li>B. 0W，不变</li>
     <li>C. 4W，减小</li>
     <li>D. 10W，不变</li>
   </ul>
