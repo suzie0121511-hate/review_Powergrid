@@ -7,14 +7,50 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
   <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify@4/lib/themes/vue.css">
   <style>
-    /* 错题卡片基础样式 */
+    /* 刷题模式整体容器 */
+    .quiz-wrapper {
+      max-width: 800px;
+      margin: 20px auto;
+    }
+    /* 进度条样式 */
+    .progress-container {
+      width: 100%;
+      background-color: #f5f5f5;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+      position: relative;
+    }
+    .progress-bar {
+      height: 12px;
+      background-color: #42b983;
+      border-radius: 10px;
+      width: 0%;
+      transition: width 0.4s ease;
+    }
+    .progress-text {
+      font-size: 12px;
+      color: #666;
+      margin-top: 5px;
+      text-align: right;
+      font-weight: bold;
+    }
+    /* 题目卡片 */
     .question-card {
       border: 1px solid #e0e0e0;
       border-radius: 12px;
       padding: 24px;
-      margin-bottom: 30px;
       background-color: #ffffff;
       box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      position: relative;
+    }
+    .question-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      border-bottom: 1px solid #f0f0f0;
+      padding-bottom: 10px;
     }
     .question-tag {
       display: inline-block;
@@ -24,33 +60,33 @@
       border-radius: 20px;
       background-color: #e3f2fd;
       color: #0d47a1;
-      margin-bottom: 12px;
-      text-transform: uppercase;
     }
     .question-tag.multi {
       background-color: #fbe9e7;
       color: #d84315;
     }
-    .question-text {
-      font-size: 16px;
-      font-weight: 500;
-      line-height: 1.6;
-      margin-bottom: 15px;
+    .question-index {
+      font-size: 14px;
+      color: #666;
+      font-weight: bold;
     }
-    /* 交互式选项样式 */
+    /* ABCD 选项按钮组 */
     .options-group {
       display: flex;
-      flex-direction: column;
-      gap: 10px;
-      margin: 15px 0;
+      justify-content: space-around;
+      gap: 15px;
+      margin: 25px 0;
     }
     .option-btn {
-      text-align: left;
-      padding: 12px 20px;
-      border: 1px solid #e0e0e0;
-      border-radius: 8px;
+      flex: 1;
+      max-width: 120px;
+      text-align: center;
+      padding: 15px 0;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
       background-color: #f9f9f9;
-      font-size: 14px;
+      font-size: 18px;
+      font-weight: bold;
       cursor: pointer;
       transition: all 0.2s ease;
       outline: none;
@@ -59,32 +95,52 @@
       background-color: #f0f0f0;
       border-color: #b0b0b0;
     }
-    /* 答题状态 */
     .option-btn.correct {
       background-color: #e8f5e9 !important;
       border-color: #4caf50 !important;
       color: #2e7d32 !important;
-      font-weight: bold;
     }
     .option-btn.wrong {
       background-color: #ffebee !important;
       border-color: #f44336 !important;
       color: #c62828 !important;
     }
-    /* 答题反馈提示 */
+    /* 反馈和导航 */
+    .quiz-footer {
+      margin-top: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+    }
     .feedback-tip {
       font-weight: bold;
-      margin-top: 10px;
-      font-size: 14px;
+      font-size: 16px;
+      min-height: 24px;
     }
     .feedback-tip.correct { color: #2e7d32; }
     .feedback-tip.wrong { color: #c62828; }
     
-    /* 隐藏的解析区域 */
+    .nav-btn {
+      background-color: #42b983;
+      color: white;
+      border: none;
+      padding: 10px 24px;
+      border-radius: 6px;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(66, 185, 131, 0.3);
+      transition: all 0.2s;
+    }
+    .nav-btn:hover {
+      background-color: #359469;
+    }
     .analysis-container {
-      margin-top: 20px;
+      margin-top: 25px;
       padding-top: 20px;
       border-top: 2px dashed #eee;
+      width: 100%;
     }
     img {
       max-width: 100%;
@@ -92,12 +148,17 @@
       margin: 15px 0;
       border-radius: 6px;
       border: 1px solid #eee;
+      display: block;
     }
   </style>
 </head>
 <body>
-  <div id="app">正在加载交互式错题本...</div>
+  <div id="app">正在准备智能随机刷题系统...</div>
   <script>
+    // 全局控制状态
+    let globalQuestions = [];
+    let currentQuestionIdx = 0;
+
     window.$docsify = {
       name: '⚡ 电气错题本',
       repo: '',
@@ -106,126 +167,214 @@
       search: {
         maxAge: 86400000,
         paths: 'auto',
-        placeholder: '搜索题目、知识点...',
-        noData: '没有找到相关题目',
+        placeholder: '搜索知识点...',
+        noData: '没有找到相关内容',
         depth: 6
       },
       plugins: [
-        // 核心插件：把 Markdown 的结构动态重构成带点击事件的错题交互卡片
         function(hook, vm) {
           hook.afterEach(function(html, next) {
             let tempDiv = document.createElement('div');
             tempDiv.innerHTML = html;
             
-            // 找到所有 question-card
-            tempDiv.querySelectorAll('.question-card').forEach((card, cardIdx) => {
-              const tagSpan = card.querySelector('.question-tag');
-              const isMulti = tagSpan && tagSpan.innerText.includes('多选');
-              
-              // 提取选项文本
-              const liElements = card.querySelectorAll('ul li');
-              let optionsHtml = '<div class="options-group">';
-              
-              liElements.forEach((li) => {
-                // 选项通常是 "A. xxx" 或 "$A. xxx$" 格式
-                const text = li.innerHTML;
-                const match = text.match(/^\s*([A-D])\s*[\.、]?\s*(.*)/i);
-                if (match) {
-                  const letter = match[1].toUpperCase();
-                  const content = match[2];
-                  optionsHtml += `
-                    <button class="option-btn" data-letter="${letter}" onclick="checkAnswer(this, '${cardIdx}', ${isMulti})">
-                      <strong>${letter}.</strong> ${content}
-                    </button>
-                  `;
-                }
-              });
-              optionsHtml += '</div><div id="feedback-' + cardIdx + '" class="feedback-tip"></div>';
-              
-              // 移除原来的 UL 列表，换成我们生成的交互按钮组
-              const ul = card.querySelector('ul');
-              if (ul) {
-                ul.outerHTML = optionsHtml;
-              }
-              
-              // 寻找紧跟在 card 后的解析引用块
+            let rawCards = Array.from(tempDiv.querySelectorAll('.question-card'));
+            if (rawCards.length === 0) {
+              next(html);
+              return;
+            }
+            
+            // 1. 提取所有卡片的数据和与之关联的解析块
+            let parsedQuestions = [];
+            rawCards.forEach((card) => {
               let nextEl = card.nextElementSibling;
               while (nextEl && nextEl.tagName !== 'BLOCKQUOTE') {
                 nextEl = nextEl.nextElementSibling;
               }
               
+              let correctAns = '';
+              let analysisInner = '';
               if (nextEl && nextEl.tagName === 'BLOCKQUOTE' && nextEl.innerText.includes('[显示解析]')) {
-                const analysisInner = nextEl.innerHTML.replace('[显示解析]', '');
-                // 提取正确答案字母
+                analysisInner = nextEl.innerHTML.replace('[显示解析]', '');
                 const ansMatch = analysisInner.match(/正确答案：\s*<strong>([A-D]+)<\/strong>/i) 
                                  || analysisInner.match(/正确答案：\s*([A-D]+)/i);
-                const correctAns = ansMatch ? ansMatch[1].trim().toUpperCase() : '';
-                
-                // 给卡片附加上正确答案数据属性
-                card.setAttribute('data-correct', correctAns);
-                
-                // 将解析内容包装在隐藏容器中，放入卡片内部
-                const analysisDiv = document.createElement('div');
-                analysisDiv.id = `analysis-${cardIdx}`;
-                analysisDiv.className = 'analysis-container';
-                analysisDiv.style.display = 'none';
-                analysisDiv.innerHTML = analysisInner;
-                
-                card.appendChild(analysisDiv);
-                // 销毁原来页面上的引用块
-                nextEl.remove();
+                correctAns = ansMatch ? ansMatch[1].trim().toUpperCase() : '';
+                nextEl.remove(); // 移除原解析引用块
               }
+              
+              card.setAttribute('data-correct', correctAns);
+              parsedQuestions.push({
+                cardHtml: card.outerHTML,
+                correctAns: correctAns,
+                analysisHtml: analysisInner
+              });
             });
+            
+            // 2. 核心算法：利用 Fisher-Yates 算法完美打乱题目顺序，保证完全随机与平均不重复
+            for (let i = parsedQuestions.length - 1; i > 0; i--) {
+              const j = Math.floor(Math.random() * (i + 1));
+              [parsedQuestions[i], parsedQuestions[j]] = [parsedQuestions[j], parsedQuestions[i]];
+            }
+            
+            // 存入全局变量供运行时调用
+            globalQuestions = parsedQuestions;
+            currentQuestionIdx = 0;
+            
+            // 3. 渲染动态进度条和刷题容器架子
+            let quizWrapper = document.createElement('div');
+            quizWrapper.className = 'quiz-wrapper';
+            quizWrapper.innerHTML = `
+              <div class="progress-container">
+                <div id="quiz-progress-bar" class="progress-bar"></div>
+              </div>
+              <div id="quiz-progress-text" class="progress-text">进度：0% (0/${globalQuestions.length})</div>
+              <div id="active-question-zone"></div>
+            `;
+            
+            tempDiv.innerHTML = '';
+            tempDiv.appendChild(quizWrapper);
             next(tempDiv.innerHTML);
+          });
+
+          // 网页渲染完成后，立刻加载第一道打乱后的题目
+          hook.doneEach(function() {
+            if (globalQuestions.length > 0) {
+              renderActiveQuestion();
+            }
           });
         }
       ]
+    };
+
+    // 动态渲染当前正在做的题目
+    function renderActiveQuestion() {
+      const zone = document.getElementById('active-question-zone');
+      if (!zone) return;
+      
+      const q = globalQuestions[currentQuestionIdx];
+      
+      // 创建临时载体解析 HTML
+      let temp = document.createElement('div');
+      temp.innerHTML = q.cardHtml;
+      let card = temp.firstElementChild;
+      
+      // 重组头部信息与清除无用列表
+      const tagSpan = card.querySelector('.question-tag');
+      const isMulti = tagSpan && tagSpan.innerText.includes('多选');
+      const tagText = tagSpan ? tagSpan.innerText : '单选题';
+      
+      const headerDiv = document.createElement('div');
+      headerDiv.className = 'question-header';
+      headerDiv.innerHTML = `
+        <span class="question-tag ${isMulti ? 'multi' : ''}">${tagText}</span>
+        <span class="question-index">第 ${currentQuestionIdx + 1} / ${globalQuestions.length} 题</span>
+      `;
+      if (tagSpan) tagSpan.remove();
+      card.insertBefore(headerDiv, card.firstChild);
+      
+      const ul = card.querySelector('ul');
+      if (ul) ul.remove();
+      
+      // 植入纯净 ABCD 选项及控制按钮
+      let optionsHtml = `
+        <div class="options-group">
+          <button class="option-btn" data-letter="A" onclick="checkAnswer(this, ${isMulti})">A</button>
+          <button class="option-btn" data-letter="B" onclick="checkAnswer(this, ${isMulti})">B</button>
+          <button class="option-btn" data-letter="C" onclick="checkAnswer(this, ${isMulti})">C</button>
+          <button class="option-btn" data-letter="D" onclick="checkAnswer(this, ${isMulti})">D</button>
+        </div>
+        <div class="quiz-footer">
+          <div id="quiz-feedback" class="feedback-tip"></div>
+          <button id="quiz-next-btn" class="nav-btn" style="display: none;" onclick="goToNextQuestion()">下一题 ➔</button>
+        </div>
+        <div id="quiz-analysis-box" class="analysis-container" style="display: none;">
+          ${q.analysisHtml}
+        </div>
+      `;
+      
+      card.appendChild(document.createRange().createContextualFragment(optionsHtml));
+      zone.innerHTML = card.outerHTML;
+      
+      // 实时更新进度条
+      updateProgressBar();
     }
 
-    // 全局答题交互判断函数
-    function checkAnswer(btn, cardIdx, isMulti) {
-      const card = btn.closest('.question-card');
-      const correctAnswers = card.getAttribute('data-correct'); // 例如 "C" 或 "AB"
-      const feedback = document.getElementById(`feedback-${cardIdx}`);
-      const analysis = document.getElementById(`analysis-${cardIdx}`);
+    // 更新进度条与进度文本
+    function updateProgressBar() {
+      const pBar = document.getElementById('quiz-progress-bar');
+      const pText = document.getElementById('quiz-progress-text');
+      if (!pBar || !pText) return;
+      
+      // 进度计算基于已经做完的题数比例
+      const percentage = Math.round((currentQuestionIdx / globalQuestions.length) * 100);
+      pBar.style.width = `${percentage}%`;
+      pText.innerText = `当前进度：${percentage}% (${currentQuestionIdx}/${globalQuestions.length} 题已完成)`;
+    }
+
+    // 检查答案
+    function checkAnswer(btn, isMulti) {
+      const correctAnswers = globalQuestions[currentQuestionIdx].correctAns;
+      const feedback = document.getElementById('quiz-feedback');
+      const nextBtn = document.getElementById('quiz-next-btn');
+      const analysisBox = document.getElementById('quiz-analysis-box');
+      const zone = document.getElementById('active-question-zone');
       
       if (!isMulti) {
-        // --- 单选题逻辑 ---
         const selectedLetter = btn.getAttribute('data-letter');
-        const allButtons = card.querySelectorAll('.option-btn');
+        const allButtons = zone.querySelectorAll('.option-btn');
         
-        // 清除本题其他按钮的状态
         allButtons.forEach(b => b.className = 'option-btn');
         
         if (correctAnswers.includes(selectedLetter)) {
           btn.classList.add('correct');
-          feedback.innerHTML = '🎉 回答正确！已为你展开解析。';
+          feedback.innerHTML = '🎉 回答正确！';
           feedback.className = 'feedback-tip correct';
-          // 展开解析
-          analysis.style.display = 'block';
+          analysisBox.style.display = 'block';
+          nextBtn.style.display = 'block';
         } else {
           btn.classList.add('wrong');
-          feedback.innerHTML = '❌ 答案错误，再试一次吧！';
+          feedback.innerHTML = '❌ 答案错误，再换个选项试试！';
           feedback.className = 'feedback-tip wrong';
-          analysis.style.display = 'none';
+          analysisBox.style.display = 'none';
+          nextBtn.style.display = 'none';
         }
       } else {
-        // --- 多选题逻辑 ---
-        btn.classList.toggle('correct'); // 多选允许来回切换选中状态
-        
-        const selectedButtons = card.querySelectorAll('.option-btn.correct');
+        // 多选题逻辑
+        btn.classList.toggle('correct');
+        const selectedButtons = zone.querySelectorAll('.option-btn.correct');
         const selectedLetters = Array.from(selectedButtons).map(b => b.getAttribute('data-letter')).sort().join('');
         const sortedCorrect = correctAnswers.split('').sort().join('');
         
         if (selectedLetters === sortedCorrect) {
           feedback.innerHTML = '🎉 恭喜你，多选题全部选对！';
           feedback.className = 'feedback-tip correct';
-          analysis.style.display = 'block';
+          analysisBox.style.display = 'block';
+          nextBtn.style.display = 'block';
         } else {
           feedback.innerHTML = '🧐 选项还未完全找对哦，继续加油！';
           feedback.className = 'feedback-tip wrong';
-          analysis.style.display = 'none';
+          analysisBox.style.display = 'none';
+          nextBtn.style.display = 'none';
         }
+      }
+    }
+
+    // 下一题动作
+    function goToNextQuestion() {
+      currentQuestionIdx++;
+      if (currentQuestionIdx < globalQuestions.length) {
+        renderActiveQuestion();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+        // 答完最后一题，进度条拉满
+        document.getElementById('quiz-progress-bar').style.width = '100%';
+        document.getElementById('quiz-progress-text').innerText = `当前进度：100% (${globalQuestions.length}/${globalQuestions.length} 题已完成)`;
+        document.getElementById('active-question-zone').innerHTML = `
+          <div class="question-card" style="text-align: center; padding: 40px 20px;">
+            <h2 style="color: #42b983; margin-bottom: 15px;">🎉 完美通关！</h2>
+            <p style="font-size: 16px; color: #555;">你已成功攻克当前板块的所有错题！</p>
+            <button class="nav-btn" style="margin-top: 20px;" onclick="location.reload()">重新打乱再练一次</button>
+          </div>
+        `;
       }
     }
   </script>
