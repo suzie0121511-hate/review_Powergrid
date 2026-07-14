@@ -34,6 +34,14 @@ const quizData = {
       answer: "B",
       analysis: "1. 当 $X_L = X_C$ 时，RLC 串联电路发生**串联谐振**。<br>2. 谐振时，电感电压 $\\dot{U}_L$ 与电容电压 $\\dot{U}_C$ 大小相等、相位相反，即 $\\dot{U}_L = -\\dot{U}_C$。<br>3. 题目中的 $U$ 是 L 与 C 串联端口的总电压：$$U = U_L + U_C = 0$$"
     },
+    {
+      id: 5,
+      type: "单选",
+      title: "戴维南定理应用（求功率）",
+      image: "circuit-05.png",
+      answer: "B",
+      analysis: "1. **求 AB 开路电压 $U_{oc}$**：<br>&bull; A 点电位：$V_A = 15 \\times \\frac{6}{3+6} = 10\\text{ V}$<br>&bull; B 点电位：$V_B = 20 \\times \\frac{2}{2+2} = 10\\text{ V}$<br>&bull; 开路电压：$U_{oc} = V_A - V_B = 10 - 10 = 0\\text{ V}$<br>2. **接入 $8\\Omega$ 电阻时**：<br>&bull; 既然开路电压为 0V，接入电阻后该支路电流依然为 0。因此电阻功率为 $0\\text{ W}$。<br>&bull; 支路无电流通过，原左、右两个独立回路运行状态未变，各电源输出电流未变。因此，两个电源发出的功率**保持不变**。"
+    },
    {
       id: 6,
       type: "单选",
