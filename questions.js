@@ -106,13 +106,13 @@ const quizData = {
       answer: "CD",
       analysis: "<strong>核心考点：受控源、KCL 与理想电流源基本概念</strong><br><br>题目要求选出<strong>错误</strong>的选项：<br><br>1. <strong>A 正确</strong>：根据 KCL 电荷守恒，流出结点的电流之和必须等于流入电流之和，不可能同时全部流出。<br>2. <strong>B 正确</strong>：任何集总参数电路的电压和电流都要受 KCL、KVL（拓扑约束）和 VCR（元件约束）的共同制约。<br>3. <strong>C 错误（本题答案）</strong>：受控源是双端口能量控制元件，其自身<strong>既可以吸收功率，也可以提供功率</strong>。它消耗的功率不仅由独立电源提供。<br>4. <strong>D 错误（本题答案）</strong>：理想电流源输出恒定的电流，其两端的输出电压完全由<strong>外电路（负载）</strong>决定，与内阻无关（理想电流源内阻为无穷大）。<br>因此，错误的说法的选项为 <strong>CD</strong>。"
     },
-    {
+   {
       id: 14,
       type: "单选",
       title: "对称三相电路功率表读数计算",
-      image: "circuit/屏幕截图 2026-07-14 201852.png", // 👈 统一修正为 .png
-      answer: "B",
-      analysis: "<strong>核心考点：功率表反偏读数及测量计算</strong><br><br>1. <strong>功率公式与接线判定</strong>：<br>功率表电压线圈所测为线电压 $U_{AC}$，电流线圈为线电流 $I_A$。由于测量对称三相电路中存在滞后角与极性反向（反偏）：<br>根据公式：$$P = U_l I_l \\cos(\\varphi - 30^\\circ)$$<br>这里减去 $30^\\circ$ 的核心物理原因即为反偏修正。<br>2. <strong>代入计算</strong>：<br>代入对应的 $U_l = 380\\text{ V}$ 及负载阻抗 $Z = 18 + j24\\,\\Omega$。由上面的正弦关系可得：<br>$$P = 380 \\times 7.33 \\times \\cos(53.13^\\circ - 30^\\circ) = 380 \\times 7.33 \\times \\cos(23.13^\\circ) \\approx 5016\\text{ W}$$<br>因此，本题标准答案锁定为 <strong>B. 5016</strong>。"
+      image: "circuit/屏幕截图 2026-07-14 201852.png",
+      answer: "D", // 👈 精准订正为 D 选项
+      analysis: "<strong>核心考点：三相阻抗 $\\Delta$ 接法下功率表测量计算</strong><br><br>1. <strong>接线与公式分析</strong>：<br>功率表电流线圈测量 $A$ 相线电流 $I_A$，电压线圈跨接在 $A, C$ 端测线电压 $U_{AC}$。根据三相功率测量原理及反偏修正，功率表读数公式为：<br>$$P = U_l I_l \\cos(\\varphi - 30^\\circ)$$<br>2. <strong>计算相、线电流与阻抗角</strong>：<br>&bull; 负载为 $\\Delta$ 接法，负载阻抗 $Z = 18 + j24\\,\\Omega$，阻抗模为 $|Z| = \\sqrt{18^2 + 24^2} = 30\\,\\Omega$。<br>&bull; 阻抗角为：$$\\varphi = \\arctan\\left(\\frac{24}{18}\\right) \\approx 53.13^\\circ$$<br>&bull; 负载相电流：$$I_P = \\frac{U_l}{|Z|} = \\frac{380}{30} \\approx 12.67\\text{ A}$$<br>&bull; 回路中的线电流：$$I_l = \\sqrt{3} I_P = \\sqrt{3} \\times 12.67 \\approx 21.94\\text{ A}$$<br>3. <strong>计算有功功率读数</strong>：<br>代入公式：<br>$$P = 380 \\times 21.94 \\times \\cos(53.13^\\circ - 30^\\circ) = 380 \\times 21.94 \\times \\cos(23.13^\\circ)$$<br>$$P \\approx 380 \\times 21.94 \\times 0.9196 \\approx 7669.5\\text{ W}$$<br>结合选项误差，本题标准答案选择 <strong>D. 7690</strong>。"
     },
     {
       id: 15,
@@ -169,6 +169,46 @@ const quizData = {
       image: "",
       answer: "BD",
       analysis: "<strong>核心考点：电压参考极性与电位的物理概念</strong><br><br>1. <strong>基本公式与物理意义分析</strong>：<br>&bull; 图中电压 $u$ 的参考极性为 <strong>$a$ 正 $b$ 负</strong>，这代表以 $a$ 点为高电位参考点、$b$ 点为低电位参考点，其数学表达式为：$$u = v_a - v_b$$<br>&bull; 题目已知：$$u = -10\\text{ V}$$<br>&bull; 将已知条件代入公式得：$$v_a - v_b = -10\\text{ V} \\implies v_b - v_a = 10\\text{ V}$$<br>这说明：<strong>$b$ 点的实际电位比 $a$ 点高 $10\\text{ V}$</strong>。<br><br>2. <strong>选项逐一判定</strong>：<br>&bull; <strong>A. 错误</strong>：根据计算，应该是 $b$ 点比 $a$ 点高 $10\\text{ V}$，而不是 $a$ 比 $b$ 高。<br>&bull; <strong>B. 正确</strong>：$b$ 点电位确实比 $a$ 点电位高 $10\\text{ V}$。<br>&bull; <strong>C. 错误</strong>：通常 $a$ 与 $b$ 之间的电位差（即电压 $u_{ab}$）是有方向和正负号的，应为 $-10\\text{ V}$。<br>&bull; <strong>D. 正确</strong>：若设 $a$ 点为参考点（即 $v_a = 0\\text{ V}$），由于 $b$ 点比 $a$ 点高 $10\\text{ V}$，则 $b$ 点电位为：$$v_b = v_a + 10\\text{ V} = 10\\text{ V}$$<br><br>⚠️ <strong>注意</strong>：本题为多选题，正确答案为 <strong>BD</strong>。"
+    },
+    {
+      id: 22,
+      type: "单选",
+      title: "理想电压源的电流判定形式",
+      image: "", // 👈 纯文本题，无需图片，零延迟秒开！
+      answer: "C",
+      analysis: "<strong>核心考点：理想电压源的物理性质</strong><br><br>1. <strong>理想电压源的物理定义</strong>：<br>理想电压源（又称恒压源）是指其两端的输出电压 $U$ 恒等于某一给定的定值，或者按给定的时间规律变化，其电压大小和波形与流过它的电流大小完全无关。<br><br>2. <strong>电压源的电流如何决定</strong>：<br>&bull; 理想电压源自身的电压值是由<strong>其电源本身（即电压源的电动势或电压值）</strong>所决定的（对应选项 A 的前半句）。<br>&bull; 但流过理想电压源的实际电流大小，则完全取决于<strong>外接电路（包括外接电路的元件性质和连接结构）</strong>。<br>&bull; 因此，理想电压源的实际电流，是由<strong>电压源和外接电路共同决定</strong>的。<br><br>3. <strong>选项逐一判定</strong>：<br>&bull; <strong>A. 错误</strong>：电压源的电压由自身决定，但电流不能仅由电压值决定。<br>&bull; <strong>B. 错误</strong>：只提到外接元件性质，忽略了电压源自身的电压大小和电路连接结构。<br>&bull; <strong>C. 正确（本题标准答案）</strong>：由电压源和外接电路共同决定。<br>&bull; <strong>D. 错误</strong>：只提到了连接结构，不完整。<br>因此，本题正确答案选择 <strong>C</strong>。"
+    },
+    {
+      id: 23,
+      type: "多选",
+      title: "某用电器的额定电压为 $220\\text{ V}$，额定电流为 $10\\text{ A}$，用电 $1\\text{ 小时}$，其消耗的电能为",
+      image: "", // 👈 纯文本题，无需图片，秒开！
+      answer: "AC", // 👈 标准多选答案 AC
+      analysis: "<strong>核心考点：电能公式计算与单位换算（度与焦耳）</strong><br><br>1. <strong>计算有功功率 $P$</strong>：<br>已知额定电压 $U = 220\\text{ V}$，额定电流 $I = 10\\text{ A}$：<br>$$P = U I = 220\\text{ V} \\times 10\\text{ A} = 2200\\text{ W} = 2.2\\text{ kW}$$<br>2. <strong>计算消耗电能并换算为“度”（千瓦时）</strong>：<br>用电时间 $t = 1\\text{ 小时}$：<br>$$W = P t = 2.2\\text{ kW} \\times 1\\text{ h} = 2.2\\text{ kW}\\cdot\\text{h} = 2.2\\text{ 度}$$<br>因此，<strong>A 选项正确</strong>。<br><br>3. <strong>换算电能为国际标准单位“焦耳”（$\\text{J}$）</strong>：<br>因为 $1\\text{ 度} = 3.6 \\times 10^6\\text{ J}$，所以：<br>$$W = 2.2 \\times 3.6 \\times 10^6\\text{ J} = 7.92 \\times 10^6\\text{ J}$$<br>因此，<strong>C 选项正确</strong>。<br><br>综上所述，本题正确答案为 <strong>AC</strong>。"
+    },
+    {
+      id: 24,
+      type: "多选",
+      title: "关于集总参数元件，下列说法正确的是",
+      image: "", // 👈 纯文本概念题，无需图片，零延迟秒开！
+      answer: "ACD", // 👈 精准多选答案 ACD
+      analysis: "<strong>核心考点：集总参数元件与集总电路的基本概念</strong><br><br>1. <strong>选项 A 正确</strong>：在任何时刻，流入集总二端元件的一个端子的电流，必须恒等于从另一个端子流出的电流。这是电荷守恒定律在集总参数条件下的必然结果，元件内部不会积聚净电荷。<br><br>2. <strong>选项 B 错误</strong>：集总元件的端电压和电流关系<strong>不一定是线性关系</strong>。集总参数元件不仅包含线性元件（如线性电阻、电容、电感），也广泛包括非线性元件（如半导体二极管、非线性电阻器件等）。<br><br>3. <strong>选项 C 正确</strong>：集总二端元件两个端子间的电压，在任何时刻都具有确定的、单一的数值，即为单值量。<br><br>4. <strong>选项 D 正确</strong>：在集总电路中，物理尺寸远小于电磁波波长，电磁场完全集中在元件内部。因此，其端电压和电流<strong>只是时间的函数，而与空间位置坐标无关</strong>（若与空间位置有关，则属于分布参数电路，如长输电线）。<br><br>综上所述，本题正确答案为 <strong>ACD</strong>。"
+    },
+    {
+      id: 25,
+      type: "多选",
+      title: "【例 2-8-1】 用结点电压法求电压 U 的所需方程判定",
+      image: "circuit/1000317377.png", // 👈 放入 circuit 文件夹下，后缀改成统一的 .png
+      answer: "ABCD",
+      analysis: "<strong>核心考点：特殊支路（无阻电压源、理想电流源串联）的结点电压方程列写</strong><br><br>我们将参考点（地）设在图中标志地符号的左侧结点，三个独立结点的电位分别为 $U_1, U_2, U_3$。<br><br>1. <strong>选项 A 正确（无阻电压源支路约束）</strong>：<br>结点 1 与参考地之间直接连接了一个 $6\\text{ V}$ 的理想电压源（正极在 1 端）。因此，结点 1 的电位直接被该电压源锁定：<br>$$U_1 = 6\\text{ V}$$<br>2. <strong>选项 B 正确（结点 2 的 KCL 方程）</strong>：<br>与结点 2 相连的支路自导有 $\\frac{1}{4}$ 和 $\\frac{1}{1}$（即 $1$）。连接到地。同时与结点 1 相连的互导项为 $-1 \\cdot U_1$。流过中间支路流入结点 2 的电流为恒流源的 $5\\text{ A}$（注意：电流源与 $2\\,\\Omega$ 电阻串联，其支路电流仍由电流源独立决定）。<br>列写方程为：<br>$$\\left(\\frac{1}{4} + 1\\right)U_2 - U_1 = 5$$<br>3. <strong>选项 C 正确（结点 3 的 KCL 方程）</strong>：<br>与结点 3 相连的自导有 $\\frac{1}{3}$（左支路）和 $\\frac{1}{2}$（右支路）。连接到地。同时与结点 1 相连的互导项为 $-\\frac{1}{2}U_1$。流过中间支路流出结点 3 的电流为恒流源的 $5\\text{ A}$（即记为 $-5$）。<br>列写方程为：<br>$$\\left(\\frac{1}{3} + \\frac{1}{2}\\right)U_3 - \\frac{1}{2}U_1 = -5$$<br>4. <strong>选项 D 正确（受控量/待求量 U 关系式）</strong>：<br>电压 $U$ 为 $5\\text{ A}$ 电流源两端的电压。沿该支路从 2 走到 3 经过的电位降为：<br>$$U_2 - U_3 = 2 \\times 5 + U \\implies U_2 - U_3 = U - 2 \\times 5$$（其中 $2 \\times 5$ 为 $2\\,\\Omega$ 串联电阻上的压降）。此项方程同样正确。<br><br>综上所述，所需方程 <strong>A、B、C、D 全部正确</strong>。"
+    },
+    {
+      id: 26,
+      type: "多选",
+      title: "【例 2-8-2】 对图示电路列写结点电压方程判定",
+      image: "circuit/1000317378.png", // 👈 放入 circuit 文件夹下，后缀改成统一的 .png
+      answer: "ABC",
+      analysis: "<strong>核心考点：含受控源的结点电压方程标准列写</strong><br><br>本题以 0 结点为参考地，独立结点电位分别为 $U_{n1}, U_{n2}$。受控源的控制量为 $U$。<br><br>1. <strong>选项 A 正确（结点 1 的标准方程）</strong>：<br>与 1 结点相连的自导为 $\\frac{1}{R_1} + \\frac{1}{R_2} + \\frac{1}{R_3}$。与 2 结点的互导为 $-\\frac{1}{R_3}U_{n2}$。左侧无阻电压源支路含有内阻 $R_1$，等效注入电流源项为 $\\frac{U_s}{R_1}$。<br>方程为：<br>$$\\left(\\frac{1}{R_1} + \\frac{1}{R_2} + \\frac{1}{R_3}\\right)U_{n1} - \\frac{1}{R_3}U_{n2} = \\frac{U_s}{R_1}$$<br>2. <strong>选项 B 正确（结点 2 的标准方程）</strong>：<br>与 2 结点相连的自导为 $\\frac{1}{R_3} + \\frac{1}{R_4}$。与 1 结点的互导为 $-\\frac{1}{R_3}U_{n1}$。右侧受控电流源 $gU$ 注入结点 2。<br>方程为：<br>$$-\\frac{1}{R_3}U_{n1} + \\left(\\frac{1}{R_3} + \\frac{1}{R_4}\\right)U_{n2} = gU$$<br>3. <strong>选项 C 正确（控制量 U 的辅助方程）</strong>：<br>控制量电压 $U$ 为电阻 $R_3$ 两端的电压（正极在 1 端，负极在 2 端）。根据电位差关系有：<br>$$U = U_{n1} - U_{n2}$$<br>4. <strong>选项 D 错误</strong>：<br>观察受控源箭头，电流实际指向结点 2（流入），故等号右侧应为 $+gU$ 而非 $-gU$。<br><br>综上所述，正确的方程有 <strong>ABC</strong>。"
     }
   ],
   "power-system": [],
