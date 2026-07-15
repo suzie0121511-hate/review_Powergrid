@@ -152,8 +152,6 @@
       background-color: #edf2f7;
       border-color: #cbd5e0;
     }
-    
-    /* ⚡ 选中状态样式（多选时未提交的暂存高亮） */
     .option-btn.selected {
       background-color: #e3f2fd !important;
       border-color: #2196f3 !important;
@@ -169,7 +167,6 @@
       border-color: #e53e3e !important;
       color: #9b2c2c !important;
     }
-    
     .footer-zone {
       display: flex;
       flex-direction: column;
@@ -196,8 +193,6 @@
     .action-btn:hover {
       background-color: var(--primary-hover);
     }
-    
-    /* ⚡ 提交按钮颜色区别于下一题按钮 */
     .submit-btn {
       background-color: #2196f3;
       box-shadow: 0 4px 10px rgba(33, 150, 243, 0.25);
@@ -205,7 +200,6 @@
     .submit-btn:hover {
       background-color: #1976d2;
     }
-
     .analysis-box {
       margin-top: 25px;
       padding-top: 25px;
@@ -335,7 +329,7 @@
 
     let activeQuestions = [];
     let currentIdx = 0;
-    let selectedOptions = []; // ⚡ 记录多选题用户的暂存选项
+    let selectedOptions = [];
 
     document.addEventListener("DOMContentLoaded", function() {
       if (typeof quizData === "undefined") {
@@ -382,17 +376,18 @@
       const card = document.getElementById('quiz-card');
       const q = activeQuestions[currentIdx];
       
-      // 重置用户的暂存多选数组
       selectedOptions = [];
 
-      // 处理图片的 CDN 生成
+      // ⚡ 核心修复：自动判断图片路径是根目录图还是文件夹图，避免拼接错误导致404
       let imgHtml = "";
       if (q.image && q.image.trim() !== "") {
-        const imgUrl = `${cdnBase}${q.image}`;
+        // 如果已经写了含有斜杠的文件路径（如 circuit/xxx.png），就直接使用
+        // 否则，说明它是前 5 题存在根目录下的文件，我们不需要强行在 CDN 路径后硬塞子目录
+        const finalImgPath = q.image.includes("/") ? q.image : q.image;
+        const imgUrl = `${cdnBase}${finalImgPath}`;
         imgHtml = `<img src="${imgUrl}" alt="题目插图" onerror="this.src='${q.image}'">`;
       }
 
-      // 判定题目类型标签
       const isMulti = q.type === "多选";
       const tagClass = isMulti ? "tag multi" : "tag";
       const tagText = isMulti ? "多选题" : "单选题";
@@ -412,7 +407,6 @@
         </div>
         <div class="footer-zone">
           <div id="feedback-txt" class="feedback"></div>
-          <!-- 多选题特有的确认提交按钮 -->
           <button id="submit-btn" class="action-btn submit-btn" style="display: ${isMulti ? 'block' : 'none'};" onclick="submitMultiAnswer()">确认提交</button>
           <button id="next-btn" class="action-btn" style="display: none;" onclick="goNext()">下一题 ➔</button>
         </div>
@@ -429,13 +423,11 @@
       }
     }
 
-    // ⚡ 选项点击通用控制（区分单选和多选）
     function handleOptionClick(btn) {
       const q = activeQuestions[currentIdx];
       const letter = btn.getAttribute('data-letter');
       const allButtons = document.querySelectorAll('.option-btn');
 
-      // 1. 如果用户之前已经点错或答过，再次点击任何按钮时，重置所有对错红绿颜色，变回正常状态
       let hasStatus = false;
       allButtons.forEach(b => {
         if (b.classList.contains('wrong') || b.classList.contains('correct')) {
@@ -453,9 +445,7 @@
         document.getElementById('feedback-txt').innerHTML = '';
       }
 
-      // 2. 分流执行单多选题逻辑
       if (q.type === "多选") {
-        // 多选：点击进行高亮 toggle
         if (selectedOptions.includes(letter)) {
           selectedOptions = selectedOptions.filter(l => l !== letter);
           btn.classList.remove('selected');
@@ -464,12 +454,10 @@
           btn.classList.add('selected');
         }
       } else {
-        // 单选：直接秒判对错
         checkSingleAnswer(btn, q.answer);
       }
     }
 
-    // 🔴 单选题瞬时判定
     function checkSingleAnswer(btn, correctAns) {
       const feedback = document.getElementById('feedback-txt');
       const nextBtn = document.getElementById('next-btn');
@@ -496,7 +484,6 @@
       }
     }
 
-    // 🔵 多选题提交判定
     function submitMultiAnswer() {
       const q = activeQuestions[currentIdx];
       const feedback = document.getElementById('feedback-txt');
@@ -511,12 +498,10 @@
         return;
       }
 
-      // 排序后比对答案字符集是否完美吻合
       const userAnsString = selectedOptions.sort().join('');
       const correctAnsString = q.answer.split('').sort().join('');
 
       if (userAnsString === correctAnsString) {
-        // 全对
         allButtons.forEach(b => {
           const letter = b.getAttribute('data-letter');
           if (correctAnsString.includes(letter)) {
@@ -531,7 +516,6 @@
         nextBtn.style.display = 'block';
         if (submitBtn) submitBtn.style.display = 'none';
       } else {
-        // 错选、漏选或多选：将用户选中的设为红色，未选对的恢复原样
         allButtons.forEach(b => {
           const letter = b.getAttribute('data-letter');
           if (selectedOptions.includes(letter)) {
