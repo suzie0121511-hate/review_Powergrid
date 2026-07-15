@@ -121,6 +121,46 @@ const quizData = {
       image: "circuit/屏幕截图 2026-07-14 201653.jpg",
       answer: "B",
       analysis: "1. <strong>电压谐振状态分析</strong>：<br>当等效参数为 $R, L$ 的电感线圈与电容 $C$ 串联，在有效值为 $150\\text{ V}$ 的正弦交流电源上发生串联谐振时，整个串联电路呈纯电阻性。谐振时，电容两端的电压 $\\dot{U}_C$ 与线圈中纯电感两端的电压 $\\dot{U}_L$ 大小相等、相位相反 ($U_C = U_L = 150\\text{ V}$)。<br>2. <strong>等效电阻上的电压</strong>：<br>由于谐振时电抗完全抵消，外部电源电压 $150\\text{ V}$ 将全部降落在等效电阻 $R$ 上，即 $U_R = U_{source} = 150\\text{ V}$。<br>3. <strong>求整个电感线圈两端的电压</strong>：<br>电感线圈是由等效电阻 $R$ 与电感 $L$ 串联构成的，这两个元件上的电压相位差为 $90^\\circ$：<br>$$U_{coil} = \\sqrt{U_R^2 + U_L^2} = \\sqrt{150^2 + 150^2} = 150\\sqrt{2}\\text{ V}$$"
+    },
+    {
+      id: 16,
+      type: "单选",
+      title: "戴维南等效内阻求解方法的独立源处理",
+      image: "circuit/屏幕截图 2026-07-14 204752.png",
+      answer: "B",
+      analysis: "<strong>核心考点：戴维南等效电阻求解方法对比</strong><br><br>1. <strong>外加电源法（无源网络法）</strong>：<br>&bull; 处理方法：必须将原网络内部的<strong>所有独立电源全部置零</strong>（即电压源短路、电流源开路），但要保留受控源。<br>&bull; 求解：在端口外加一个电压源 $U$（或电流源 $I$），求出端口电流 $I$（或电压 $U$），等效电阻为 $R_{eq} = \\frac{U}{I}$。<br>2. <strong>开路-短路法</strong>：<br>&bull; 处理方法：原网络内部的独立电源<strong>保持不变（不置零）</strong>。<br>&bull; 求解：先求出端口的开路电压 $U_{oc}$，再将端口短路求出短路电流 $I_{sc}$，等效电阻为 $R_{eq} = \\frac{U_{oc}}{I_{sc}}$。<br>3. <strong>结论</strong>：<br>这两种方法对内部独立电源的处理方法是<strong>完全不同</strong>的。因此本题说法<strong>错误</strong>。"
+    },
+    {
+      id: 17,
+      type: "单选",
+      title: "二瓦计法测量功率及反偏读数处理",
+      image: "circuit/屏幕截图 2026-07-14 204603.jpg",
+      answer: "B",
+      analysis: "<strong>核心考点：二瓦计法测量三相总功率</strong><br><br>1. <strong>公式基础</strong>：<br>用二瓦计法测量三相总功率时，总功率为两只功率表读数的代数和：<br>$$P = P_1 + P_2$$<br>2. <strong>反偏与换向的代数意义</strong>：<br>&bull; 功率表 W2 在连接正确的情况下表针反偏，说明该处的实际功率流动方向使指针向左偏转，其理论读数应当为<strong>负值</strong>。<br>&bull; 为了读数，将 W2 的电流线圈换向连接，此时表针正偏并测得 $500\\text{ W}$。这意味着 W2 原本的实际读数应当记为：<br>$$P_2 = -500\\text{ W}$$<br>3. <strong>计算总功率</strong>：<br>$$P = P_1 + P_2 = 1500 + (-500) = 1000\\text{ W}$$<br>题目中直接将两者相加得出 $2000\\text{ W}$ 的结论是<strong>错误</strong>的（换向读数必须代入负值计算）。"
+    },
+    {
+      id: 18,
+      type: "多选",
+      title: "正弦量有效值物理意义与数学表达",
+      image: "circuit/屏幕截图 2026-07-14 204154.jpg",
+      answer: "A",
+      analysis: "<strong>核心考点：交流电有效值（RMS）的基本概念</strong><br><br>1. <strong>选项 A 正确</strong>：有效值是根据<strong>热效应等效</strong>的原理定义的。让交流电和直流量分别通过同一电阻，若它们在一个周期内产生的热量相等，该直流量的大小就是该交流电的有效值。<br>2. <strong>选项 B 正确</strong>：对于正弦交流电，有效值 $I$ 与最大值 $I_m$ 的数学关系为：<br>$$I = \\frac{I_m}{\\sqrt{2}} \\approx 0.707 I_m$$<br>3. <strong>选项 C 正确</strong>：有效值的数学定义是先平方、再求平均、最后开方，因此在工程和物理学中又被称为<strong>均方根值</strong>（Root Mean Square, RMS）。<br>4. <strong>选项 D 错误</strong>：有效值作为均方根值，其数学计算结果<strong>恒为非负数（只能为正）</strong>，不存在负的有效值。<br><br>⚠️ <strong>注意</strong>：本题为多选题，正确选项为 <strong>ABC</strong>。在系统当前单选模式下，默认锁定选项 <strong>A</strong> 即可解锁此完整解析。"
+    },
+    {
+      id: 19,
+      type: "多选",
+      title: "串联谐振电路特征判定",
+      image: "circuit/屏幕截图 2026-07-14 204036.png",
+      answer: "B",
+      analysis: "<strong>核心考点：串联谐振（电压谐振）的物理特征</strong><br><br>1. <strong>选项 A 错误</strong>：串联谐振时，等效阻抗最小（$Z = R$），因此等效导纳 $Y = \\frac{1}{Z}$ 达到<strong>最大</strong>（等效导纳最小是并联谐振的特点）。<br>2. <strong>选项 B 正确</strong>：在电源电压恒定时，由于阻抗 $Z$ 达到最小，电路中的电流 $I = \\frac{U}{Z}$ 达到<strong>最大值</strong>。<br>3. <strong>选项 C 正确</strong>：谐振的根本条件是电抗虚部为零，在串联电路中即感抗等于容抗：<br>$$X_L = X_C \\implies \\omega L = \\frac{1}{\\omega C}$$<br>4. <strong>选项 D 正确</strong>：在串联谐振时，电感电压 $\\dot{U}_L$ 与电容电压 $\\dot{U}_C$ 大小相等、相位相反，且它们的幅值可能会远大于电源电压，因此串联谐振又称为<strong>电压谐振</strong>。<br><br>⚠️ <strong>注意</strong>：本题为多选题，正确特征有 <strong>BCD</strong>。在系统当前的单选模式下，默认标准正确按钮为 <strong>B</strong>。"
+    },
+    {
+      id: 20,
+      type: "多选",
+      title: "正弦电压相量的四种数学表示法形式",
+      image: "circuit/屏幕截图 2026-07-14 203649.png",
+      answer: "A",
+      analysis: "<strong>核心考点：正弦量的有效值相量与最大值相量的各种数学形式</strong><br><br>已知正弦电压的瞬时值表达式为：<br>$$u = 3\\sqrt{2} \\sin(\\omega t - 45^\\circ)\\text{ V}$$<br>&bull; 最大值：$U_m = 3\\sqrt{2}\\text{ V}$<br>&bull; 有效值：$U = \\frac{U_m}{\\sqrt{2}} = 3\\text{ V}$<br>&bull; 初相：$\\psi = -45^\\circ$<br><br>1. <strong>极坐标形式（有效值相量）</strong>：<br>$$\\dot{U} = U \\angle \\psi = 3\\angle -45^\\circ\\text{ V}$$（<strong>选项 A 正确</strong>）<br>2. <strong>指数形式（有效值相量）</strong>：<br>$$\\dot{U} = U e^{j\\psi} = 3e^{-j45^\\circ}\\text{ V}$$（自定义代数算子记作 $j$ 时，<strong>选项 B 正确</strong>）<br>3. <strong>代数形式（有效值相量）</strong>：<br>$$\\dot{U} = U \\cos(\\psi) + jU \\sin(\\psi) = 3 \\cos(-45^\\circ) + j3 \\sin(-45^\\circ) = \\frac{3\\sqrt{2}}{2} - j\\frac{3\\sqrt{2}}{2}\\text{ V}$$（<strong>选项 C 正确</strong>）<br>4. <strong>最大值相量形式</strong>：<br>$$\\dot{U}_m = U_m \\angle \\psi = 3\\sqrt{2}\\angle -45^\\circ\\text{ V}$$（标记下标 $m$ 时，指向最大值相量，<strong>选项 D 正确</strong>）<br><br>⚠️ <strong>注意</strong>：这道多选题出得非常绝，<strong>A、B、C、D 四个表达形式全部都是正确的</strong>！系统单选模式下，默认选项 <strong>A</strong> 为标准答案。"
     }
   ],
   "power-system": [],
