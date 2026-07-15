@@ -382,13 +382,12 @@
       selectedOptions = [];
 
       // ⚡ URL 安全转码：对每一部分路径、中文名、空格进行完全转码，100%防死锁、防404
+     // 替换为这套：不用 CDN，直接用相对路径智能秒开！
       let imgHtml = "";
       if (q.image && q.image.trim() !== "") {
-        const parts = q.image.split('/');
-        const encodedParts = parts.map(part => encodeURIComponent(part));
-        const finalImgPath = encodedParts.join('/');
-        const imgUrl = `${cdnBase}${finalImgPath}`;
-        imgHtml = `<img src="${imgUrl}" alt="题目插图" onerror="this.src='${encodeURI(q.image)}'">`;
+        // 使用相对路径加载同仓库下的图片，既安全又秒开
+        const relativeUrl = q.image.split('/').map(part => encodeURIComponent(part)).join('/');
+        imgHtml = `<img src="${relativeUrl}" alt="题目插图">`;
       }
 
       const isMulti = q.type === "多选";
