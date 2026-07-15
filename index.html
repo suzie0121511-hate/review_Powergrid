@@ -325,7 +325,10 @@
   </div>
 
   <script>
-    const cdnBase = "https://cdn.jsdelivr.net/gh/suzie0121511-hate/review_Powergrid@main/";
+    // ⚡ 强力纠偏：直接死死锁住你当前真正的 review_Powergrid 仓库！
+    const userName = "suzie0121511-hate";
+    const repoName = "review_Powergrid"; 
+    const cdnBase = `https://cdn.jsdelivr.net/gh/${userName}/${repoName}@main/`;
 
     let activeQuestions = [];
     let currentIdx = 0;
@@ -378,14 +381,14 @@
       
       selectedOptions = [];
 
-      // ⚡ 核心修复：自动判断图片路径是根目录图还是文件夹图，避免拼接错误导致404
+      // ⚡ URL 安全转码：对每一部分路径、中文名、空格进行完全转码，100%防死锁、防404
       let imgHtml = "";
       if (q.image && q.image.trim() !== "") {
-        // 如果已经写了含有斜杠的文件路径（如 circuit/xxx.png），就直接使用
-        // 否则，说明它是前 5 题存在根目录下的文件，我们不需要强行在 CDN 路径后硬塞子目录
-        const finalImgPath = q.image.includes("/") ? q.image : q.image;
+        const parts = q.image.split('/');
+        const encodedParts = parts.map(part => encodeURIComponent(part));
+        const finalImgPath = encodedParts.join('/');
         const imgUrl = `${cdnBase}${finalImgPath}`;
-        imgHtml = `<img src="${imgUrl}" alt="题目插图" onerror="this.src='${q.image}'">`;
+        imgHtml = `<img src="${imgUrl}" alt="题目插图" onerror="this.src='${encodeURI(q.image)}'">`;
       }
 
       const isMulti = q.type === "多选";
