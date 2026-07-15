@@ -206,7 +206,7 @@ const quizData = {
       id: 26,
       type: "多选",
       title: "【例 2-8-2】 对图示电路列写结点电压方程判定",
-      image: "circuit/1000317378.png", // 👈 放入 circuit 文件夹下，后缀改成统一的 .png
+      image: "circuit/77064325c2c1270a301aa15990e15248.jpg", // 👈 放入 circuit 文件夹下，后缀改成统一的 .png
       answer: "ABC",
       analysis: "<strong>核心考点：含受控源的结点电压方程标准列写</strong><br><br>本题以 0 结点为参考地，独立结点电位分别为 $U_{n1}, U_{n2}$。受控源的控制量为 $U$。<br><br>1. <strong>选项 A 正确（结点 1 的标准方程）</strong>：<br>与 1 结点相连的自导为 $\\frac{1}{R_1} + \\frac{1}{R_2} + \\frac{1}{R_3}$。与 2 结点的互导为 $-\\frac{1}{R_3}U_{n2}$。左侧无阻电压源支路含有内阻 $R_1$，等效注入电流源项为 $\\frac{U_s}{R_1}$。<br>方程为：<br>$$\\left(\\frac{1}{R_1} + \\frac{1}{R_2} + \\frac{1}{R_3}\\right)U_{n1} - \\frac{1}{R_3}U_{n2} = \\frac{U_s}{R_1}$$<br>2. <strong>选项 B 正确（结点 2 的标准方程）</strong>：<br>与 2 结点相连的自导为 $\\frac{1}{R_3} + \\frac{1}{R_4}$。与 1 结点的互导为 $-\\frac{1}{R_3}U_{n1}$。右侧受控电流源 $gU$ 注入结点 2。<br>方程为：<br>$$-\\frac{1}{R_3}U_{n1} + \\left(\\frac{1}{R_3} + \\frac{1}{R_4}\\right)U_{n2} = gU$$<br>3. <strong>选项 C 正确（控制量 U 的辅助方程）</strong>：<br>控制量电压 $U$ 为电阻 $R_3$ 两端的电压（正极在 1 端，负极在 2 端）。根据电位差关系有：<br>$$U = U_{n1} - U_{n2}$$<br>4. <strong>选项 D 错误</strong>：<br>观察受控源箭头，电流实际指向结点 2（流入），故等号右侧应为 $+gU$ 而非 $-gU$。<br><br>综上所述，正确的方程有 <strong>ABC</strong>。"
     }
