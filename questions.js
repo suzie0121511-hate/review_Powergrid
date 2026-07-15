@@ -173,32 +173,32 @@ const quizData = {
     {
       id: 22,
       type: "单选",
-      title: "理想电压源的电流判定形式",
-      image: "", // 👈 纯文本题，无需图片，零延迟秒开！
+      title: "理想电压源的电流（ ）。<br><br>A. 由电压源的电压值决定<br>B. 由外接电路的元件性质决定<br>C. 由电压源和外接电路共同决定<br>D. 由外接电路的连接结构决定",
+      image: "",
       answer: "C",
-      analysis: "<strong>核心考点：理想电压源的物理性质</strong><br><br>1. <strong>理想电压源的物理定义</strong>：<br>理想电压源（又称恒压源）是指其两端的输出电压 $U$ 恒等于某一给定的定值，或者按给定的时间规律变化，其电压大小和波形与流过它的电流大小完全无关。<br><br>2. <strong>电压源的电流如何决定</strong>：<br>&bull; 理想电压源自身的电压值是由<strong>其电源本身（即电压源的电动势或电压值）</strong>所决定的（对应选项 A 的前半句）。<br>&bull; 但流过理想电压源的实际电流大小，则完全取决于<strong>外接电路（包括外接电路的元件性质和连接结构）</strong>。<br>&bull; 因此，理想电压源的实际电流，是由<strong>电压源和外接电路共同决定</strong>的。<br><br>3. <strong>选项逐一判定</strong>：<br>&bull; <strong>A. 错误</strong>：电压源的电压由自身决定，但电流不能仅由电压值决定。<br>&bull; <strong>B. 错误</strong>：只提到外接元件性质，忽略了电压源自身的电压大小和电路连接结构。<br>&bull; <strong>C. 正确（本题标准答案）</strong>：由电压源和外接电路共同决定。<br>&bull; <strong>D. 错误</strong>：只提到了连接结构，不完整。<br>因此，本题正确答案选择 <strong>C</strong>。"
+      analysis: "<strong>核心考点：理想电压源的物理性质</strong><br><br>1. <strong>理想电压源的物理定义</strong>：<br>理想电压源（又称恒压源）是指其两端的输出电压 $U$ 恒等于某一给定的定值，或者按给定的时间规律变化，其电压大小和波形与流过它的电流大小完全无关。<br><br>2. <strong>电压源的电流如何决定</strong>：<br>&bull; 理想电压源自身的电压值是由<strong>其电源本身（即电压源的电位）</strong>所决定的。<br>&bull; 但流过理想电压源的实际电流大小，则完全取决于<strong>外接电路（包括外接电路的元件性质和连接结构）</strong>。<br>&bull; 因此，理想电压源的实际电流，是由<strong>电压源和外接电路共同决定</strong>的。<br><br>因此，本题正确答案选择 <strong>C</strong>。"
     },
     {
       id: 23,
       type: "多选",
-      title: "某用电器的额定电压为 $220\\text{ V}$，额定电流为 $10\\text{ A}$，用电 $1\\text{ 小时}$，其消耗的电能为",
-      image: "", // 👈 纯文本题，无需图片，秒开！
-      answer: "AC", // 👈 标准多选答案 AC
+      title: "某用电器的额定电压为 220V，额定电流为 10A，用电 1 小时，其消耗的电能为（ ）。<br><br>A. 2.2度<br>B. 3960J<br>C. 7.92×10⁶ J<br>D. 1.1J",
+      image: "",
+      answer: "AC",
       analysis: "<strong>核心考点：电能公式计算与单位换算（度与焦耳）</strong><br><br>1. <strong>计算有功功率 $P$</strong>：<br>已知额定电压 $U = 220\\text{ V}$，额定电流 $I = 10\\text{ A}$：<br>$$P = U I = 220\\text{ V} \\times 10\\text{ A} = 2200\\text{ W} = 2.2\\text{ kW}$$<br>2. <strong>计算消耗电能并换算为“度”（千瓦时）</strong>：<br>用电时间 $t = 1\\text{ 小时}$：<br>$$W = P t = 2.2\\text{ kW} \\times 1\\text{ h} = 2.2\\text{ kW}\\cdot\\text{h} = 2.2\\text{ 度}$$<br>因此，<strong>A 选项正确</strong>。<br><br>3. <strong>换算电能为国际标准单位“焦耳”（$\\text{J}$）</strong>：<br>因为 $1\\text{ 度} = 3.6 \\times 10^6\\text{ J}$，所以：<br>$$W = 2.2 \\times 3.6 \\times 10^6\\text{ J} = 7.92 \\times 10^6\\text{ J}$$<br>因此，<strong>C 选项正确</strong>。<br><br>综上所述，本题正确答案为 <strong>AC</strong>。"
     },
     {
       id: 24,
       type: "多选",
-      title: "关于集总参数元件，下列说法正确的是",
-      image: "", // 👈 纯文本概念题，无需图片，零延迟秒开！
-      answer: "ACD", // 👈 精准多选答案 ACD
+      title: "关于集总参数元件，下列说法正确的是（ ）。<br><br>A. 任何时刻，流入二端元件的一个端子的电流等于从另一个端子流出的电流<br>B. 元件的电压和电流为线性关系<br>C. 两个端子间的电压为单值量<br>D. 电压和电流只是时间的函数，与空间位置无关",
+      image: "",
+      answer: "ACD",
       analysis: "<strong>核心考点：集总参数元件与集总电路的基本概念</strong><br><br>1. <strong>选项 A 正确</strong>：在任何时刻，流入集总二端元件的一个端子的电流，必须恒等于从另一个端子流出的电流。这是电荷守恒定律在集总参数条件下的必然结果，元件内部不会积聚净电荷。<br><br>2. <strong>选项 B 错误</strong>：集总元件的端电压和电流关系<strong>不一定是线性关系</strong>。集总参数元件不仅包含线性元件（如线性电阻、电容、电感），也广泛包括非线性元件（如半导体二极管、非线性电阻器件等）。<br><br>3. <strong>选项 C 正确</strong>：集总二端元件两个端子间的电压，在任何时刻都具有确定的、单一的数值，即为单值量。<br><br>4. <strong>选项 D 正确</strong>：在集总电路中，物理尺寸远小于电磁波波长，电磁场完全集中在元件内部。因此，其端电压和电流<strong>只是时间的函数，而与空间位置坐标无关</strong>（若与空间位置有关，则属于分布参数电路，如长输电线）。<br><br>综上所述，本题正确答案为 <strong>ACD</strong>。"
     },
     {
       id: 25,
       type: "多选",
       title: "【例 2-8-1】 用结点电压法求电压 U 的所需方程判定",
-      image: "circuit/39af941b1c3bd2f63169185ce3f9ad87.jpg", // 👈 放入 circuit 文件夹下，后缀改成统一的 .png
+      image: "circuit/1000317377.png", // 👈 放入 circuit 文件夹下，后缀改成统一的 .png
       answer: "ABCD",
       analysis: "<strong>核心考点：特殊支路（无阻电压源、理想电流源串联）的结点电压方程列写</strong><br><br>我们将参考点（地）设在图中标志地符号的左侧结点，三个独立结点的电位分别为 $U_1, U_2, U_3$。<br><br>1. <strong>选项 A 正确（无阻电压源支路约束）</strong>：<br>结点 1 与参考地之间直接连接了一个 $6\\text{ V}$ 的理想电压源（正极在 1 端）。因此，结点 1 的电位直接被该电压源锁定：<br>$$U_1 = 6\\text{ V}$$<br>2. <strong>选项 B 正确（结点 2 的 KCL 方程）</strong>：<br>与结点 2 相连的支路自导有 $\\frac{1}{4}$ 和 $\\frac{1}{1}$（即 $1$）。连接到地。同时与结点 1 相连的互导项为 $-1 \\cdot U_1$。流过中间支路流入结点 2 的电流为恒流源的 $5\\text{ A}$（注意：电流源与 $2\\,\\Omega$ 电阻串联，其支路电流仍由电流源独立决定）。<br>列写方程为：<br>$$\\left(\\frac{1}{4} + 1\\right)U_2 - U_1 = 5$$<br>3. <strong>选项 C 正确（结点 3 的 KCL 方程）</strong>：<br>与结点 3 相连的自导有 $\\frac{1}{3}$（左支路）和 $\\frac{1}{2}$（右支路）。连接到地。同时与结点 1 相连的互导项为 $-\\frac{1}{2}U_1$。流过中间支路流出结点 3 的电流为恒流源的 $5\\text{ A}$（即记为 $-5$）。<br>列写方程为：<br>$$\\left(\\frac{1}{3} + \\frac{1}{2}\\right)U_3 - \\frac{1}{2}U_1 = -5$$<br>4. <strong>选项 D 正确（受控量/待求量 U 关系式）</strong>：<br>电压 $U$ 为 $5\\text{ A}$ 电流源两端的电压。沿该支路从 2 走到 3 经过的电位降为：<br>$$U_2 - U_3 = 2 \\times 5 + U \\implies U_2 - U_3 = U - 2 \\times 5$$（其中 $2 \\times 5$ 为 $2\\,\\Omega$ 串联电阻上的压降）。此项方程同样正确。<br><br>综上所述，所需方程 <strong>A、B、C、D 全部正确</strong>。"
     },
@@ -206,9 +206,33 @@ const quizData = {
       id: 26,
       type: "多选",
       title: "【例 2-8-2】 对图示电路列写结点电压方程判定",
-      image: "circuit/77064325c2c1270a301aa15990e15248.jpg", // 👈 放入 circuit 文件夹下，后缀改成统一的 .png
+      image: "circuit/1000317378.png", // 👈 放入 circuit 文件夹下，后缀改成统一的 .png
       answer: "ABC",
       analysis: "<strong>核心考点：含受控源的结点电压方程标准列写</strong><br><br>本题以 0 结点为参考地，独立结点电位分别为 $U_{n1}, U_{n2}$。受控源的控制量为 $U$。<br><br>1. <strong>选项 A 正确（结点 1 的标准方程）</strong>：<br>与 1 结点相连的自导为 $\\frac{1}{R_1} + \\frac{1}{R_2} + \\frac{1}{R_3}$。与 2 结点的互导为 $-\\frac{1}{R_3}U_{n2}$。左侧无阻电压源支路含有内阻 $R_1$，等效注入电流源项为 $\\frac{U_s}{R_1}$。<br>方程为：<br>$$\\left(\\frac{1}{R_1} + \\frac{1}{R_2} + \\frac{1}{R_3}\\right)U_{n1} - \\frac{1}{R_3}U_{n2} = \\frac{U_s}{R_1}$$<br>2. <strong>选项 B 正确（结点 2 的标准方程）</strong>：<br>与 2 结点相连的自导为 $\\frac{1}{R_3} + \\frac{1}{R_4}$。与 1 结点的互导为 $-\\frac{1}{R_3}U_{n1}$。右侧受控电流源 $gU$ 注入结点 2。<br>方程为：<br>$$-\\frac{1}{R_3}U_{n1} + \\left(\\frac{1}{R_3} + \\frac{1}{R_4}\\right)U_{n2} = gU$$<br>3. <strong>选项 C 正确（控制量 U 的辅助方程）</strong>：<br>控制量电压 $U$ 为电阻 $R_3$ 两端的电压（正极在 1 端，负极在 2 端）。根据电位差关系有：<br>$$U = U_{n1} - U_{n2}$$<br>4. <strong>选项 D 错误</strong>：<br>观察受控源箭头，电流实际指向结点 2（流入），故等号右侧应为 $+gU$ 而非 $-gU$。<br><br>综上所述，正确的方程有 <strong>ABC</strong>。"
+    },
+    {
+      id: 27,
+      type: "多选",
+      title: "有 3 个电阻并联，已知 R₁=2Ω，R₂=3Ω，R₃=6Ω。在 3 个并联电阻的两端外加电流为 Is=18A 的电流源，对应电阻中的电流分别为（ ）。<br><br>A. I_R₁ = 9A<br>B. I_R₂ = 6A<br>C. I_R₃ = 3A<br>D. I_R₃ = 5A",
+      image: "",
+      answer: "ABC",
+      analysis: "<strong>核心考点：电阻并联等效、分流规律与欧姆定律</strong><br><br>1. <strong>求解并联电路的等效两端电压 $U$</strong>：<br>已知三个电阻并联：$R_1 = 2\\,\\Omega$，$R_2 = 3\\,\\Omega$，$R_3 = 6\\,\\Omega$。<br>&bull; 并联等效电阻 $R_{eq}$ 倒数公式为：<br>$$\\frac{1}{R_{eq}} = \\frac{1}{R_1} + \\frac{1}{R_2} + \\frac{1}{R_3} = \\frac{1}{2} + \\frac{1}{3} + \\frac{1}{6} = 1\\,\\text{S}$$<br>&bull; 得等效电阻为：$R_{eq} = 1\\,\\Omega$。<br>&bull; 已知注入并联电路的总外加电流为 $I_s = 18\\text{ A}$。根据欧姆定律，并联两端的等效电压为：<br>$$U = I_s \\cdot R_{eq} = 18\\text{ A} \\times 1\\,\\Omega = 18\\text{ V}$$<br>2. <strong>分别求解各支路电流</strong>：<br>&bull; <strong>A 选项正确</strong>：流过 $R_1$ 的电流为：$$I_{R1} = \\frac{U}{R_1} = \\frac{18\\text{ V}}{2\\,\\Omega} = 9\\text{ A}$$<br>&bull; <strong>B 选项正确</strong>：流过 $R_2$ 的电流为：$$I_{R2} = \\frac{U}{R_2} = \\frac{18\\text{ V}}{3\\,\\Omega} = 6\\text{ A}$$<br>&bull; <strong>|C 选项正确</strong>：流过 $R_3$ 的电流为：$$I_{R3} = \\frac{U}{R_3} = \\frac{18\\text{ V}}{6\\,\\Omega} = 3\\text{ A}$$<br>&bull; <strong>D 选项错误</strong>：由计算可知 $I_{R3} = 3\\text{ A}$，而非 $5\\text{ A}$。<br><br>综上所述，正确选项为 <strong>ABC</strong>。"
+    },
+    {
+      id: 28,
+      type: "多选",
+      title: "关于电阻的星形（Y）联结与三角形（&Delta;）联结的等效变换，下列叙述哪些是正确的？（ ）<br><br>A. 当电阻的 Y 联结与 &Delta; 联结进行等效变换时，对应 3 个端子之间的电压保持不变<br>B. 当电阻的 Y 联结与 &Delta; 联结进行等效变换时，流入对应 3 个端子的电流保持不变<br>C. 当电阻的 Y 联结与 &Delta; 联结进行等效变换时，等效电阻也相等<br>D. 当电路的 3 个电阻值相等时，无需使用电阻 Y-&Delta; 等效变换",
+      image: "",
+      answer: "AB",
+      analysis: "<strong>核心考点：电阻星形（Y）与三角形（&Delta;）等效变换的物理实质</strong><br><br>1. <strong>什么是“等效变换”？</strong><br>电阻网络等效变换的根本前提是：<strong>对外部电路等效，对内不等效</strong>。也就是说，用等效网络代替原网络后，未被替换的外接电路中的所有电压、电流和功率等均保持完全不变。<br><br>2. <strong>选项逐一分析</strong>：<br>&bull; <strong>A 选项正确（等效核心定义）</strong>：当电阻的 Y 联结与 &Delta; 联结进行等效变换时，对应三个端子之间的<strong>电压保持不变</strong>。<br>&bull; <strong>B 选项正确（等效核心定义）</strong>：变换后流入对应三个端子的<strong>电流保持不变</strong>。<br>&bull; <strong>C 选项错误</strong>：等效变换仅对外部电路等效，变换后其内部的三个电阻阻值、内部电压和电流分布已经彻底改变。变换前后的 Y 联结和 &Delta; 联结内部阻值并不相等（$R_{\\Delta} = 3 R_Y$）。<br>&bull; <strong>D 选项错误</strong>：当三个电阻值不等时，等效变换为 &Delta; 联结后的三个电阻值也是不等的。只有在对称三相（电阻都相等）时才可以简化为 $R_{\\Delta} = 3 R_Y$ 的简易关系，但同样属于等效变换的一种简化情况。<br><br>综上所述，说法正确的选项为 <strong>AB</strong>。"
+    },
+    {
+      id: 29,
+      type: "多选",
+      title: "实际电流源对负载供电，若外电路改变，则将引起（ ）。<br><br>A. 端电压 U 变化<br>B. 负载电流 I 变化<br>C. 负载电阻吸收的功率变化<br>D. 负载电流 I 不变化",
+      image: "",
+      answer: "ABC",
+      analysis: "<strong>核心考点：实际电流源模型及其物理特征</strong><br><br>1. <strong>实际电流源模型结构</strong>：<br>实际电流源由一个理想电流源 $I_s$ 与内阻 $R_s$ 并联组成。其输出给外部负载电阻 $R$ 的电流为：<br>$$I = I_s - I_s' = I_s - \\frac{U}{R_s}$$<br>其中 $U$ 是电流源的端电压（同时加在内阻 $R_s$ 和负载 $R$ 上），$I_s'$ 为分流流过其内阻的电流。<br><br>2. <strong>当外电路电阻 $R$ 发生变化时，物理参数响应</strong>：<br>&bull; <strong>A 选项正确</strong>：外接电阻 $R$ 改变，会使实际电流源的端电压 $U = I \\cdot R$ 随之<strong>发生变化</strong>。<br>&bull; <strong>B 选项正确</strong>：由于端电压 $U$ 改变，导致内阻分流 $I_s' = \\frac{U}{R_s}$ 改变，因而输出给负载的实际<strong>负载电流 $I$ 发生变化</strong>。<br>&bull; <strong>C 选项正确</strong>：负载电流 $I$ 和电压 $U$ 都改变了，则负载吸收的功率 $P = U \\cdot I$ 必然<strong>发生变化</strong>。<br>&bull; <strong>D 选项错误</strong>：实际电流源内部的理想恒流源部分的输出电流 $I_s$ 是由电源自身性质决定的常数，其<strong>保持恒定不变</strong>。但负载电流 $I$ 是一定会改变的。<br><br>综上所述，会引起变化的参数选项为 <strong>ABC</strong>。"
     }
   ],
   "power-system": [],
