@@ -117,6 +117,10 @@
       padding: 4px 10px;
       border-radius: 20px;
     }
+    .tag.multi {
+      background-color: #fff5f5;
+      color: #c53030;
+    }
     .title { font-size: 18px; font-weight: bold; margin-bottom: 15px; }
     img {
       max-width: 100%;
@@ -148,6 +152,13 @@
       background-color: #edf2f7;
       border-color: #cbd5e0;
     }
+    
+    /* ⚡ 选中状态样式（多选时未提交的暂存高亮） */
+    .option-btn.selected {
+      background-color: #e3f2fd !important;
+      border-color: #2196f3 !important;
+      color: #0d47a1 !important;
+    }
     .option-btn.correct {
       background-color: #f0fff4 !important;
       border-color: #38a169 !important;
@@ -158,6 +169,7 @@
       border-color: #e53e3e !important;
       color: #9b2c2c !important;
     }
+    
     .footer-zone {
       display: flex;
       flex-direction: column;
@@ -165,7 +177,7 @@
       gap: 15px;
       margin-top: 20px;
     }
-    .feedback { font-weight: bold; font-size: 16px; min-height: 24px; }
+    .feedback { font-weight: bold; font-size: 16px; min-height: 24px; text-align: center; }
     .feedback.correct { color: #38a169; }
     .feedback.wrong { color: #e53e3e; }
     
@@ -184,6 +196,16 @@
     .action-btn:hover {
       background-color: var(--primary-hover);
     }
+    
+    /* ⚡ 提交按钮颜色区别于下一题按钮 */
+    .submit-btn {
+      background-color: #2196f3;
+      box-shadow: 0 4px 10px rgba(33, 150, 243, 0.25);
+    }
+    .submit-btn:hover {
+      background-color: #1976d2;
+    }
+
     .analysis-box {
       margin-top: 25px;
       padding-top: 25px;
@@ -262,7 +284,6 @@
   
   <script src="questions.js" defer></script>
   
-  <!-- ⚡ 引入 MathJax 用于完美渲染 LaTeX 数学公式 -->
   <script>
     window.MathJax = {
       tex: {
@@ -314,6 +335,7 @@
 
     let activeQuestions = [];
     let currentIdx = 0;
+    let selectedOptions = []; // ⚡ 记录多选题用户的暂存选项
 
     document.addEventListener("DOMContentLoaded", function() {
       if (typeof quizData === "undefined") {
@@ -359,23 +381,39 @@
     function renderQuestion() {
       const card = document.getElementById('quiz-card');
       const q = activeQuestions[currentIdx];
-      const imgUrl = `${cdnBase}${q.image}`;
+      
+      // 重置用户的暂存多选数组
+      selectedOptions = [];
+
+      // 处理图片的 CDN 生成
+      let imgHtml = "";
+      if (q.image && q.image.trim() !== "") {
+        const imgUrl = `${cdnBase}${q.image}`;
+        imgHtml = `<img src="${imgUrl}" alt="题目插图" onerror="this.src='${q.image}'">`;
+      }
+
+      // 判定题目类型标签
+      const isMulti = q.type === "多选";
+      const tagClass = isMulti ? "tag multi" : "tag";
+      const tagText = isMulti ? "多选题" : "单选题";
 
       card.innerHTML = `
         <div class="card-header">
-          <span class="tag">${q.type || '单选题'}</span>
+          <span class="${tagClass}">${tagText}</span>
           <span style="font-size: 13px; font-weight: bold; color: var(--text-muted)">第 ${currentIdx + 1} / ${activeQuestions.length} 题</span>
         </div>
         <div class="title">${q.title}</div>
-        <img src="${imgUrl}" alt="电路图" onerror="this.src='${q.image}'">
+        ${imgHtml}
         <div class="options-grid">
-          <button class="option-btn" data-letter="A" onclick="checkAnswer(this)">A</button>
-          <button class="option-btn" data-letter="B" onclick="checkAnswer(this)">B</button>
-          <button class="option-btn" data-letter="C" onclick="checkAnswer(this)">C</button>
-          <button class="option-btn" data-letter="D" onclick="checkAnswer(this)">D</button>
+          <button class="option-btn" data-letter="A" onclick="handleOptionClick(this)">A</button>
+          <button class="option-btn" data-letter="B" onclick="handleOptionClick(this)">B</button>
+          <button class="option-btn" data-letter="C" onclick="handleOptionClick(this)">C</button>
+          <button class="option-btn" data-letter="D" onclick="handleOptionClick(this)">D</button>
         </div>
         <div class="footer-zone">
           <div id="feedback-txt" class="feedback"></div>
+          <!-- 多选题特有的确认提交按钮 -->
+          <button id="submit-btn" class="action-btn submit-btn" style="display: ${isMulti ? 'block' : 'none'};" onclick="submitMultiAnswer()">确认提交</button>
           <button id="next-btn" class="action-btn" style="display: none;" onclick="goNext()">下一题 ➔</button>
         </div>
         <div id="analysis-section" class="analysis-box" style="display: none;">
@@ -386,14 +424,53 @@
       
       updateProgress();
       
-      // ⚡ 触发 MathJax 渲染新生成的题目中的公式
       if (window.MathJax && window.MathJax.typeset) {
         window.MathJax.typeset();
       }
     }
 
-    function checkAnswer(btn) {
+    // ⚡ 选项点击通用控制（区分单选和多选）
+    function handleOptionClick(btn) {
       const q = activeQuestions[currentIdx];
+      const letter = btn.getAttribute('data-letter');
+      const allButtons = document.querySelectorAll('.option-btn');
+
+      // 1. 如果用户之前已经点错或答过，再次点击任何按钮时，重置所有对错红绿颜色，变回正常状态
+      let hasStatus = false;
+      allButtons.forEach(b => {
+        if (b.classList.contains('wrong') || b.classList.contains('correct')) {
+          hasStatus = true;
+        }
+      });
+      if (hasStatus) {
+        allButtons.forEach(b => {
+          const bLetter = b.getAttribute('data-letter');
+          b.className = 'option-btn';
+          if (selectedOptions.includes(bLetter)) {
+            b.classList.add('selected');
+          }
+        });
+        document.getElementById('feedback-txt').innerHTML = '';
+      }
+
+      // 2. 分流执行单多选题逻辑
+      if (q.type === "多选") {
+        // 多选：点击进行高亮 toggle
+        if (selectedOptions.includes(letter)) {
+          selectedOptions = selectedOptions.filter(l => l !== letter);
+          btn.classList.remove('selected');
+        } else {
+          selectedOptions.push(letter);
+          btn.classList.add('selected');
+        }
+      } else {
+        // 单选：直接秒判对错
+        checkSingleAnswer(btn, q.answer);
+      }
+    }
+
+    // 🔴 单选题瞬时判定
+    function checkSingleAnswer(btn, correctAns) {
       const feedback = document.getElementById('feedback-txt');
       const nextBtn = document.getElementById('next-btn');
       const analysisSection = document.getElementById('analysis-section');
@@ -402,7 +479,7 @@
       const selected = btn.getAttribute('data-letter');
       allButtons.forEach(b => b.className = 'option-btn');
 
-      if (selected === q.answer) {
+      if (selected === correctAns) {
         btn.classList.add('correct');
         feedback.innerHTML = '🎉 回答正确！已解锁解析。';
         feedback.className = 'feedback correct';
@@ -413,8 +490,60 @@
         feedback.innerHTML = '❌ 答案错误，再换一个选项试试！';
         feedback.className = 'feedback wrong';
       }
-      
-      // ⚡ 触发 MathJax 渲染新显现的解析中的公式
+
+      if (window.MathJax && window.MathJax.typeset) {
+        window.MathJax.typeset();
+      }
+    }
+
+    // 🔵 多选题提交判定
+    function submitMultiAnswer() {
+      const q = activeQuestions[currentIdx];
+      const feedback = document.getElementById('feedback-txt');
+      const nextBtn = document.getElementById('next-btn');
+      const submitBtn = document.getElementById('submit-btn');
+      const analysisSection = document.getElementById('analysis-section');
+      const allButtons = document.querySelectorAll('.option-btn');
+
+      if (selectedOptions.length === 0) {
+        feedback.innerHTML = '⚠️ 请先选择至少一个选项再提交！';
+        feedback.className = 'feedback wrong';
+        return;
+      }
+
+      // 排序后比对答案字符集是否完美吻合
+      const userAnsString = selectedOptions.sort().join('');
+      const correctAnsString = q.answer.split('').sort().join('');
+
+      if (userAnsString === correctAnsString) {
+        // 全对
+        allButtons.forEach(b => {
+          const letter = b.getAttribute('data-letter');
+          if (correctAnsString.includes(letter)) {
+            b.className = 'option-btn correct';
+          } else {
+            b.className = 'option-btn';
+          }
+        });
+        feedback.innerHTML = '🎉 回答正确！已解锁解析。';
+        feedback.className = 'feedback correct';
+        analysisSection.style.display = 'block';
+        nextBtn.style.display = 'block';
+        if (submitBtn) submitBtn.style.display = 'none';
+      } else {
+        // 错选、漏选或多选：将用户选中的设为红色，未选对的恢复原样
+        allButtons.forEach(b => {
+          const letter = b.getAttribute('data-letter');
+          if (selectedOptions.includes(letter)) {
+            b.className = 'option-btn wrong';
+          } else {
+            b.className = 'option-btn';
+          }
+        });
+        feedback.innerHTML = '❌ 答案不完全正确或包含错误选项，再试试！';
+        feedback.className = 'feedback wrong';
+      }
+
       if (window.MathJax && window.MathJax.typeset) {
         window.MathJax.typeset();
       }
