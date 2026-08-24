@@ -234,13 +234,7 @@ window.quizData["circuit"] = [
       image: "",
       answer: "ABC",
       analysis: "<strong>核心考点：实际电流源模型及其物理特征</strong><br><br>1. <strong>实际电流源模型结构</strong>：<br>实际电流源由一个理想电流源 $I_s$ 与内阻 $R_s$ 并联组成。其输出给外部负载电阻 $R$ 的电流为：<br>$$I = I_s - I_s' = I_s - \\frac{U}{R_s}$$<br>其中 $U$ 是电流源的端电压（同时加在内阻 $R_s$ 和负载 $R$ 上），$I_s'$ 为分流流过其内阻的电流。<br><br>2. <strong>当外电路电阻 $R$ 发生变化时，物理参数响应</strong>：<br>&bull; <strong>A 选项正确</strong>：外接电阻 $R$ 改变，会使实际电流源的端电压 $U = I \\cdot R$ 随之<strong>发生变化</strong>。<br>&bull; <strong>B 选项正确</strong>：由于端电压 $U$ 改变，导致内阻分流 $I_s' = \\frac{U}{R_s}$ 改变，因而输出给负载的实际<strong>负载电流 $I$ 发生变化</strong>。<br>&bull; <strong>C 选项正确</strong>：负载电流 $I$ 和电压 $U$ 都改变了，则负载吸收的功率 $P = U \\cdot I$ 必然<strong>发生变化</strong>。<br>&bull; <strong>D 选项错误</strong>：实际电流源内部的理想恒流源部分的输出电流 $I_s$ 是由电源自身性质决定的常数，其<strong>保持恒定不变</strong>。但负载电流 $I$ 是一定会改变的。<br><br>综上所述，会引起变化的参数选项为 <strong>ABC</strong>。"
-    }
-  ],
-  "power-system": [],
-  "machines": [],
-  "power-electronics": [],
-  "high-voltage": [],
-  "protection": [],
-  "equipment": [],
-  "general-aptitude": []
-};
+   
+}
+  }
+];
