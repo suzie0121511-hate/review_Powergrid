@@ -1,7 +1,8 @@
 // ⚡ 你的专属错题本数据库（后缀100%精准对应 .png 完美复核版）
-const quizData = {
-  // 1. 电路板块
-  "circuit": [
+window.quizData = window.quizData || {};
+
+window.quizData["circuit"] = [
+  
     {
       id: 1,
       type: "单选",
