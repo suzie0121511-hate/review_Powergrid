@@ -91,7 +91,7 @@
       color: var(--text-muted);
       font-weight: 500;
       flex: 1;
-      min-width: 200px;
+      min-width: 260px;
     }
     .select-dropdown {
       padding: 6px 12px;
@@ -398,7 +398,7 @@
     let activeQuestions = [];
     let currentIdx = 0;
     let selectedOptions = [];
-    let isLocked = false; // 答对或直接看答案后的锁定状态
+    let isLocked = false;
 
     document.addEventListener("DOMContentLoaded", function() {
       if (typeof quizData === "undefined") {
@@ -435,6 +435,10 @@
       const rawData = quizData[catKey];
       activeQuestions = JSON.parse(JSON.stringify(rawData));
       
+      // ⚡ 基础保障：按题目 ID 数值严格升序排列
+      activeQuestions.sort((a, b) => (Number(a.id) || 0) - (Number(b.id) || 0));
+
+      // 若处于乱序模式，再执行洗牌打乱
       if (isShuffleMode) {
         for (let i = activeQuestions.length - 1; i > 0; i--) {
           const j = Math.floor(Math.random() * (i + 1));
@@ -454,7 +458,15 @@
         const opt = document.createElement('option');
         opt.value = idx;
         const qIdText = (q.id !== undefined && q.id !== null) ? ` [ID:${q.id}]` : '';
-        opt.textContent = `第 ${idx + 1} 题${qIdText} (${q.type || '单选'})`;
+        
+        // 过滤提取纯文本标题（去除 HTML 标签和换行）
+        let cleanTitle = (q.title || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+        if (cleanTitle.length > 18) {
+          cleanTitle = cleanTitle.substring(0, 18) + '...';
+        }
+        const titleDisplay = cleanTitle ? ` - ${cleanTitle}` : '';
+
+        opt.textContent = `第 ${idx + 1} 题${qIdText}${titleDisplay} (${q.type || '单选'})`;
         select.appendChild(opt);
       });
     }
@@ -485,11 +497,12 @@
       const isMulti = (q.type === "多选");
       const tagClass = isMulti ? "tag multi" : "tag";
       const tagText = isMulti ? "多选题" : "单选题";
+      const qIdBadge = (q.id !== undefined && q.id !== null) ? `ID: ${q.id} | ` : '';
 
       card.innerHTML = `
         <div class="card-header">
           <span class="${tagClass}">${tagText}</span>
-          <span style="font-size: 13px; font-weight: bold; color: var(--text-muted)">第 ${currentIdx + 1} / ${activeQuestions.length} 题</span>
+          <span style="font-size: 13px; font-weight: bold; color: var(--text-muted)">${qIdBadge}第 ${currentIdx + 1} / ${activeQuestions.length} 题</span>
         </div>
         <div class="title">${q.title || ''}</div>
         ${imgHtml}
@@ -524,7 +537,6 @@
       const letter = btn.getAttribute('data-letter');
       const allButtons = document.querySelectorAll('.option-btn');
 
-      // 重置之前的错误/成功临时视觉状态
       allButtons.forEach(b => {
         b.classList.remove('wrong', 'correct');
       });
