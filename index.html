@@ -335,8 +335,9 @@
     }
   </style>
   
-<script src="questions.js"></script>
-<script src="questions-general.js"></script>
+  <!-- 引入题库文件 -->
+  <script src="questions.js"></script>
+  <script src="questions-general.js"></script>
   
   <script>
     window.MathJax = {
@@ -401,12 +402,20 @@
     let selectedOptions = [];
     let isLocked = false;
 
+    // 智能检测题库数据是否准备就绪
     document.addEventListener("DOMContentLoaded", function() {
-      if (typeof quizData === "undefined") {
-        setTimeout(initApp, 500);
-      } else {
-        initApp();
+      let retryTimes = 0;
+      function waitForData() {
+        if (window.quizData && typeof window.quizData === "object" && Object.keys(window.quizData).length > 0) {
+          initApp();
+        } else if (retryTimes < 25) {
+          retryTimes++;
+          setTimeout(waitForData, 150);
+        } else {
+          initApp();
+        }
       }
+      waitForData();
     });
 
     function initApp() {
@@ -428,18 +437,18 @@
     }
 
     function loadCategory(catKey) {
-      if (typeof quizData === "undefined" || !quizData[catKey] || quizData[catKey].length === 0) {
+      if (!window.quizData || !window.quizData[catKey] || window.quizData[catKey].length === 0) {
         showEmptyState();
         return;
       }
       
-      const rawData = quizData[catKey];
+      const rawData = window.quizData[catKey];
       activeQuestions = JSON.parse(JSON.stringify(rawData));
       
-      // ⚡ 基础保障：按题目 ID 数值严格升序排列
+      // 默认按 ID 升序排好
       activeQuestions.sort((a, b) => (Number(a.id) || 0) - (Number(b.id) || 0));
 
-      // 若处于乱序模式，再执行洗牌打乱
+      // 若乱序模式，打乱题目
       if (isShuffleMode) {
         for (let i = activeQuestions.length - 1; i > 0; i--) {
           const j = Math.floor(Math.random() * (i + 1));
@@ -454,13 +463,13 @@
 
     function populateQuestionSelector() {
       const select = document.getElementById('question-select');
+      if (!select) return;
       select.innerHTML = '';
       activeQuestions.forEach((q, idx) => {
         const opt = document.createElement('option');
         opt.value = idx;
         const qIdText = (q.id !== undefined && q.id !== null) ? ` [ID:${q.id}]` : '';
         
-        // 过滤提取纯文本标题（去除 HTML 标签和换行）
         let cleanTitle = (q.title || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
         if (cleanTitle.length > 18) {
           cleanTitle = cleanTitle.substring(0, 18) + '...';
@@ -693,11 +702,12 @@
     function showEmptyState() {
       document.getElementById('progress-fill').style.width = '0%';
       document.getElementById('progress-txt').innerText = `进度：0% (0/0)`;
-      document.getElementById('question-select').innerHTML = '<option>无题目</option>';
+      const select = document.getElementById('question-select');
+      if (select) select.innerHTML = '<option>无题目</option>';
       document.getElementById('quiz-card').innerHTML = `
         <div class="empty-state">
           <h3>📭 当前板块暂无错题</h3>
-          <p style="margin-top: 10px; font-size: 14px;">你可以修改 <code>questions.js</code> 往里面塞入错题数据哦！</p>
+          <p style="margin-top: 10px; font-size: 14px;">你可以往对应的 <code>questions-xxx.js</code> 塞入错题数据哦！</p>
         </div>
       `;
     }
