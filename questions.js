@@ -162,13 +162,13 @@ const quizData = {
       answer: "ABCD",
       analysis: "<strong>核心考点：相量的极坐标、代数、指数以及最大值表达形式</strong><br><br>已知 $u = 3\\sqrt{2} \\sin(\\omega t - 45^\\circ)\\text{ V}$，则其有效值 $U = 3\\text{ V}$，初相为 $-45^\\circ$。<br><br>1. <strong>A 正确（极坐标有效值相量）</strong>：$$\\dot{U} = U \\angle \\psi = 3\\angle -45^\\circ\\text{ V}$$<br>2. <strong>B 正确（指数有效值相量）</strong>：$$\\dot{U} = U e^{j\\psi} = 3e^{-j45^\\circ}\\text{ V}$$<br>3. <strong>C 正确（代数形式有效值相量）</strong>：$$\\dot{U} = 3\\cos(-45^\\circ) + j3\\sin(-45^\\circ) = \\frac{3\\sqrt{2}}{2} - j\\frac{3\\sqrt{2}}{2}\\text{ V}$$<br>4. <strong>D 正确（最大值相量形式）</strong>：带有下标 $m$ 代表最大值相量：$$\\dot{U}_m = 3\\sqrt{2} \\angle -45^\\circ\\text{ V}$$<br>答案为 <strong>ABCD</strong>。"
     },
-    {
+   {
       id: 21,
       type: "多选",
-      title: "根据电压参考方向判定电位关系<br><br><pre style='font-family: monospace; font-size: 18px; line-height: 1.3; background: #f7fafc; padding: 15px; border: 1px solid #e2e8f0; border-radius: 8px; text-align: center; letter-spacing: 1px; color: #2d3748; margin: 15px 0;'>   i ➔\na o───[  R  ]───o b\n  +    u     -</pre>",
+      title: "【例 1-2-3】 如图中，$u = -10\\text{ V}$，下列说法正确的是（ ）。<br><br><pre style='font-family: monospace; font-size: 16px; line-height: 1.3; background: #f7fafc; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; text-align: center; letter-spacing: 1px; color: #2d3748; margin: 15px 0;'>   i ➔\na o───[  R  ]───o b\n   +    u     -</pre>A. a 点电位比 b 点电位高 10V<br>B. b 点电位比 a 点电位高 10V<br>C. a 点与 b 点间的电位差为 10V<br>D. 设 a 点为参考点，则 b 点电位为 10V",
       image: "",
       answer: "BD",
-      analysis: "<strong>核心考点：电压参考极性与电位的物理概念</strong><br><br>1. <strong>基本公式与物理意义分析</strong>：<br>&bull; 图中电压 $u$ 的参考极性为 <strong>$a$ 正 $b$ 负</strong>，这代表以 $a$ 点为高电位参考点、$b$ 点为低电位参考点，其数学表达式为：$$u = v_a - v_b$$<br>&bull; 题目已知：$$u = -10\\text{ V}$$<br>&bull; 将已知条件代入公式得：$$v_a - v_b = -10\\text{ V} \\implies v_b - v_a = 10\\text{ V}$$<br>这说明：<strong>$b$ 点的实际电位比 $a$ 点高 $10\\text{ V}$</strong>。<br><br>2. <strong>选项逐一判定</strong>：<br>&bull; <strong>A. 错误</strong>：根据计算，应该是 $b$ 点比 $a$ 点高 $10\\text{ V}$，而不是 $a$ 比 $b$ 高。<br>&bull; <strong>B. 正确</strong>：$b$ 点电位确实比 $a$ 点电位高 $10\\text{ V}$。<br>&bull; <strong>C. 错误</strong>：通常 $a$ 与 $b$ 之间的电位差（即电压 $u_{ab}$）是有方向和正负号的，应为 $-10\\text{ V}$。<br>&bull; <strong>D. 正确</strong>：若设 $a$ 点为参考点（即 $v_a = 0\\text{ V}$），由于 $b$ 点比 $a$ 点高 $10\\text{ V}$，则 $b$ 点电位为：$$v_b = v_a + 10\\text{ V} = 10\\text{ V}$$<br><br>⚠️ <strong>注意</strong>：本题为多选题，正确答案为 <strong>BD</strong>。"
+      analysis: "<strong>核心考点：电压参考极性与电位的物理概念</strong><br><br>1. <strong>基本公式与物理意义分析</strong>：<br>&bull; 图中电压 $u$ 的参考极性为 <strong>$a$ 正 $b$ 负</strong>，这代表以 $a$ 点为高电位参考点、$b$ 点为低电位参考点，其数学表达式为：$$u = v_a - v_b$$<br>&bull; 题目已知：$$u = -10\\text{ V}$$<br>&bull; 将已知条件代入公式得：$$v_a - v_b = -10\\text{ V} \\implies v_b - v_a = 10\\text{ V}$$<br>这说明：<strong>$b$ 点的实际电位比 $a$ 点高 $10\\text{ V}$</strong>。<br><br>2. <strong>选项逐一判定</strong>：<br>&bull; <strong>A. 错误</strong>：根据计算，应该是 $b$ 点比 $a$ 点高 $10\\text{ V}$，而不是 $a$ 比 $b$ 高。<br>&bull; <strong>B. 正确</strong>：$b$ 点电位确实比 $a$ 点电位高 $10\\text{ V}$。<br>&bull; <strong>C. 错误</strong>：$a$ 与 $b$ 之间的电位差 $u_{ab} = v_a - v_b = -10\\text{ V}$，而不是 $10\\text{ V}$。<br>&bull; <strong>D. 正确</strong>：若设 $a$ 点为参考点（即 $v_a = 0\\text{ V}$），由于 $b$ 点比 $a$ 点高 $10\\text{ V}$，则 $b$ 点电位为：$$v_b = v_a + 10\\text{ V} = 10\\text{ V}$$<br><br>综上所述，正确选项为 <strong>BD</strong>。"
     },
     {
       id: 22,
