@@ -74,7 +74,7 @@
       max-width: 800px;
     }
 
-    /* 顶部控制栏（选题与模式切换） */
+    /* 顶部控制栏 */
     .control-toolbar {
       display: flex;
       justify-content: space-between;
@@ -90,6 +90,8 @@
       font-size: 14px;
       color: var(--text-muted);
       font-weight: 500;
+      flex: 1;
+      min-width: 200px;
     }
     .select-dropdown {
       padding: 6px 12px;
@@ -102,6 +104,7 @@
       outline: none;
       cursor: pointer;
       box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+      max-width: 100%;
     }
     .mode-btn {
       padding: 6px 14px;
@@ -197,7 +200,7 @@
       cursor: pointer;
       transition: all 0.15s;
     }
-    .option-btn:hover {
+    .option-btn:hover:not(.disabled) {
       background-color: #edf2f7;
       border-color: #cbd5e0;
     }
@@ -215,6 +218,9 @@
       background-color: #fff5f5 !important;
       border-color: #e53e3e !important;
       color: #9b2c2c !important;
+    }
+    .option-btn.disabled {
+      cursor: default;
     }
 
     /* 底部交互区 */
@@ -234,7 +240,7 @@
     .feedback { font-weight: bold; font-size: 16px; min-height: 24px; text-align: center; }
     .feedback.correct { color: #38a169; }
     .feedback.wrong { color: #e53e3e; }
-    .feedback.info { color: var(--accent-hover); }
+    .feedback.info { color: #2b6cb0; }
     
     .action-btn {
       background-color: var(--primary-color);
@@ -260,7 +266,7 @@
     }
     .reveal-btn {
       background-color: #ffffff;
-      color: #718096;
+      color: #4a5568;
       border: 1px solid #cbd5e0;
       box-shadow: none;
     }
@@ -282,11 +288,9 @@
       padding: 40px 0;
     }
 
-    /* 移动端响应式样式 */
+    /* 移动端适配 */
     @media (max-width: 768px) {
-      body {
-        flex-direction: column;
-      }
+      body { flex-direction: column; }
       .sidebar {
         width: 100%;
         padding: 10px 0 0 0;
@@ -306,9 +310,7 @@
         padding: 0 10px;
         -webkit-overflow-scrolling: touch;
       }
-      .menu-list::-webkit-scrollbar {
-        display: none;
-      }
+      .menu-list::-webkit-scrollbar { display: none; }
       .menu-item {
         padding: 10px 16px;
         font-size: 13px;
@@ -317,44 +319,19 @@
         border-bottom: 3px solid transparent;
         flex-shrink: 0;
       }
-      .menu-item:hover, .menu-item.active {
-        background-color: transparent;
-      }
+      .menu-item:hover, .menu-item.active { background-color: transparent; }
       .menu-item.active {
         border-bottom-color: var(--primary-color);
         color: #fff;
       }
-      .main-content {
-        padding: 15px;
-      }
-      .card {
-        padding: 20px 15px;
-        border-radius: 12px;
-      }
-      .title {
-        font-size: 16px;
-      }
-      .options-grid {
-        gap: 10px;
-        margin: 20px 0;
-      }
-      .option-btn {
-        padding: 12px 0;
-        font-size: 18px;
-        border-radius: 8px;
-      }
-      .control-toolbar {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-      .btn-group {
-        width: 100%;
-      }
-      .action-btn {
-        flex: 1;
-        padding: 12px 10px;
-        font-size: 14px;
-      }
+      .main-content { padding: 15px; }
+      .card { padding: 20px 15px; border-radius: 12px; }
+      .title { font-size: 16px; }
+      .options-grid { gap: 10px; margin: 20px 0; }
+      .option-btn { padding: 12px 0; font-size: 18px; border-radius: 8px; }
+      .control-toolbar { flex-direction: column; align-items: stretch; }
+      .btn-group { width: 100%; }
+      .action-btn { flex: 1; padding: 12px 10px; font-size: 14px; }
     }
   </style>
   
@@ -369,9 +346,7 @@
       options: {
         skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
       },
-      svg: {
-        fontCache: 'global'
-      }
+      svg: { fontCache: 'global' }
     };
   </script>
   <script type="text/javascript" id="MathJax-script" async
@@ -397,7 +372,6 @@
   <div class="main-content">
     <div class="quiz-container">
       
-      <!-- 顶部控制面板 -->
       <div class="control-toolbar">
         <div class="jump-box">
           <label for="question-select">跳转题目：</label>
@@ -424,6 +398,7 @@
     let activeQuestions = [];
     let currentIdx = 0;
     let selectedOptions = [];
+    let isLocked = false; // 答对或直接看答案后的锁定状态
 
     document.addEventListener("DOMContentLoaded", function() {
       if (typeof quizData === "undefined") {
@@ -440,7 +415,7 @@
     function switchCategory(catKey, menuEl) {
       currentCategory = catKey;
       document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
-      menuEl.classList.add('active');
+      if (menuEl) menuEl.classList.add('active');
       loadCategory(catKey);
     }
 
@@ -452,17 +427,12 @@
     }
 
     function loadCategory(catKey) {
-      if (typeof quizData === "undefined") {
+      if (typeof quizData === "undefined" || !quizData[catKey] || quizData[catKey].length === 0) {
         showEmptyState();
         return;
       }
       
-      const rawData = quizData[catKey] || [];
-      if (rawData.length === 0) {
-        showEmptyState();
-        return;
-      }
-      
+      const rawData = quizData[catKey];
       activeQuestions = JSON.parse(JSON.stringify(rawData));
       
       if (isShuffleMode) {
@@ -483,7 +453,7 @@
       activeQuestions.forEach((q, idx) => {
         const opt = document.createElement('option');
         opt.value = idx;
-        const qIdText = q.id !== undefined ? ` [ID:${q.id}]` : '';
+        const qIdText = (q.id !== undefined && q.id !== null) ? ` [ID:${q.id}]` : '';
         opt.textContent = `第 ${idx + 1} 题${qIdText} (${q.type || '单选'})`;
         select.appendChild(opt);
       });
@@ -495,6 +465,9 @@
     }
 
     function renderQuestion() {
+      isLocked = false;
+      selectedOptions = [];
+
       const select = document.getElementById('question-select');
       if (select && select.value != currentIdx) {
         select.value = currentIdx;
@@ -503,15 +476,13 @@
       const card = document.getElementById('quiz-card');
       const q = activeQuestions[currentIdx];
       
-      selectedOptions = [];
-
       let imgHtml = "";
       if (q.image && q.image.trim() !== "") {
         const relativeUrl = q.image.split('/').map(part => encodeURIComponent(part)).join('/');
-        imgHtml = `<img src="${relativeUrl}" alt="题目插图">`;
+        imgHtml = `<img src="${relativeUrl}" alt="题目插图" onerror="this.style.display='none'">`;
       }
 
-      const isMulti = q.type === "多选";
+      const isMulti = (q.type === "多选");
       const tagClass = isMulti ? "tag multi" : "tag";
       const tagText = isMulti ? "多选题" : "单选题";
 
@@ -520,7 +491,7 @@
           <span class="${tagClass}">${tagText}</span>
           <span style="font-size: 13px; font-weight: bold; color: var(--text-muted)">第 ${currentIdx + 1} / ${activeQuestions.length} 题</span>
         </div>
-        <div class="title">${q.title}</div>
+        <div class="title">${q.title || ''}</div>
         ${imgHtml}
         <div class="options-grid">
           <button class="option-btn" data-letter="A" onclick="handleOptionClick(this)">A</button>
@@ -537,39 +508,27 @@
           </div>
         </div>
         <div id="analysis-section" class="analysis-box" style="display: none;">
-          <strong style="color: #2b6cb0;">✨ 标准答案：${q.answer}</strong><br><br>
-          ${q.analysis}
+          <strong style="color: #2b6cb0;">✨ 标准答案：${(q.answer || '').toUpperCase()}</strong><br><br>
+          ${q.analysis || '暂无解析'}
         </div>
       `;
       
       updateProgress();
-      
-      if (window.MathJax && window.MathJax.typeset) {
-        window.MathJax.typeset();
-      }
+      renderMathJax();
     }
 
     function handleOptionClick(btn) {
+      if (isLocked) return;
+
       const q = activeQuestions[currentIdx];
       const letter = btn.getAttribute('data-letter');
       const allButtons = document.querySelectorAll('.option-btn');
 
-      let hasStatus = false;
+      // 重置之前的错误/成功临时视觉状态
       allButtons.forEach(b => {
-        if (b.classList.contains('wrong') || b.classList.contains('correct')) {
-          hasStatus = true;
-        }
+        b.classList.remove('wrong', 'correct');
       });
-      if (hasStatus) {
-        allButtons.forEach(b => {
-          const bLetter = b.getAttribute('data-letter');
-          b.className = 'option-btn';
-          if (selectedOptions.includes(bLetter)) {
-            b.classList.add('selected');
-          }
-        });
-        document.getElementById('feedback-txt').innerHTML = '';
-      }
+      document.getElementById('feedback-txt').innerHTML = '';
 
       if (q.type === "多选") {
         if (selectedOptions.includes(letter)) {
@@ -580,41 +539,48 @@
           btn.classList.add('selected');
         }
       } else {
-        checkSingleAnswer(btn, q.answer);
+        checkSingleAnswer(btn, (q.answer || '').trim().toUpperCase());
       }
     }
 
     function checkSingleAnswer(btn, correctAns) {
       const feedback = document.getElementById('feedback-txt');
       const nextBtn = document.getElementById('next-btn');
+      const revealBtn = document.getElementById('reveal-btn');
       const analysisSection = document.getElementById('analysis-section');
       const allButtons = document.querySelectorAll('.option-btn');
       
       const selected = btn.getAttribute('data-letter');
-      allButtons.forEach(b => b.className = 'option-btn');
 
       if (selected === correctAns) {
-        btn.classList.add('correct');
+        isLocked = true;
+        allButtons.forEach(b => {
+          b.className = 'option-btn disabled';
+          if (b.getAttribute('data-letter') === correctAns) {
+            b.classList.add('correct');
+          }
+        });
         feedback.innerHTML = '🎉 回答正确！已解锁解析。';
         feedback.className = 'feedback correct';
         analysisSection.style.display = 'block';
         nextBtn.style.display = 'inline-block';
+        if (revealBtn) revealBtn.style.display = 'none';
+        renderMathJax();
       } else {
         btn.classList.add('wrong');
         feedback.innerHTML = '❌ 答案错误，再换一个选项试试！';
         feedback.className = 'feedback wrong';
       }
-
-      if (window.MathJax && window.MathJax.typeset) {
-        window.MathJax.typeset();
-      }
     }
 
     function submitMultiAnswer() {
+      if (isLocked) return;
+
       const q = activeQuestions[currentIdx];
       const feedback = document.getElementById('feedback-txt');
       const nextBtn = document.getElementById('next-btn');
       const submitBtn = document.getElementById('submit-btn');
+      const revealBtn = document.getElementById('reveal-btn');
       const analysisSection = document.getElementById('analysis-section');
       const allButtons = document.querySelectorAll('.option-btn');
 
@@ -624,16 +590,16 @@
         return;
       }
 
-      const userAnsString = selectedOptions.sort().join('');
-      const correctAnsString = q.answer.split('').sort().join('');
+      const userAnsString = selectedOptions.slice().sort().join('').toUpperCase();
+      const correctAnsString = (q.answer || '').toUpperCase().split('').sort().join('');
 
       if (userAnsString === correctAnsString) {
+        isLocked = true;
         allButtons.forEach(b => {
           const letter = b.getAttribute('data-letter');
+          b.className = 'option-btn disabled';
           if (correctAnsString.includes(letter)) {
-            b.className = 'option-btn correct';
-          } else {
-            b.className = 'option-btn';
+            b.classList.add('correct');
           }
         });
         feedback.innerHTML = '🎉 回答正确！已解锁解析。';
@@ -641,40 +607,38 @@
         analysisSection.style.display = 'block';
         nextBtn.style.display = 'inline-block';
         if (submitBtn) submitBtn.style.display = 'none';
+        if (revealBtn) revealBtn.style.display = 'none';
+        renderMathJax();
       } else {
         allButtons.forEach(b => {
           const letter = b.getAttribute('data-letter');
+          b.classList.remove('wrong', 'correct');
           if (selectedOptions.includes(letter)) {
-            b.className = 'option-btn wrong';
-          } else {
-            b.className = 'option-btn';
+            b.classList.add('wrong');
           }
         });
         feedback.innerHTML = '❌ 答案不完全正确或包含错误选项，再试试！';
         feedback.className = 'feedback wrong';
       }
-
-      if (window.MathJax && window.MathJax.typeset) {
-        window.MathJax.typeset();
-      }
     }
 
     function revealAnswer() {
+      isLocked = true;
       const q = activeQuestions[currentIdx];
       const feedback = document.getElementById('feedback-txt');
       const nextBtn = document.getElementById('next-btn');
       const submitBtn = document.getElementById('submit-btn');
+      const revealBtn = document.getElementById('reveal-btn');
       const analysisSection = document.getElementById('analysis-section');
       const allButtons = document.querySelectorAll('.option-btn');
 
-      const correctAnsString = q.answer.split('').sort().join('');
+      const correctAnsString = (q.answer || '').toUpperCase().split('').sort().join('');
 
       allButtons.forEach(b => {
         const letter = b.getAttribute('data-letter');
+        b.className = 'option-btn disabled';
         if (correctAnsString.includes(letter)) {
-          b.className = 'option-btn correct';
-        } else {
-          b.className = 'option-btn';
+          b.classList.add('correct');
         }
       });
 
@@ -683,10 +647,9 @@
       analysisSection.style.display = 'block';
       nextBtn.style.display = 'inline-block';
       if (submitBtn) submitBtn.style.display = 'none';
+      if (revealBtn) revealBtn.style.display = 'none';
 
-      if (window.MathJax && window.MathJax.typeset) {
-        window.MathJax.typeset();
-      }
+      renderMathJax();
     }
 
     function goNext() {
@@ -700,7 +663,7 @@
           <div style="text-align: center; padding: 40px 0;">
             <h2 style="color: var(--primary-color); margin-bottom: 15px;">🎉 完美通关！</h2>
             <p style="color: var(--text-muted); font-size: 15px;">当前板块的所有错题已经全部攻克！</p>
-            <button class="action-btn" style="margin-top: 25px;" onclick="loadCategory(currentCategory)">再练一次该科目</button>
+            <button class="action-btn" style="margin-top: 25px;" onclick="loadCategory('${currentCategory}')">再练一次该科目</button>
           </div>
         `;
       }
@@ -709,7 +672,7 @@
     function updateProgress() {
       const fill = document.getElementById('progress-fill');
       const txt = document.getElementById('progress-txt');
-      const percent = Math.round((currentIdx / activeQuestions.length) * 100);
+      const percent = activeQuestions.length > 0 ? Math.round((currentIdx / activeQuestions.length) * 100) : 0;
       fill.style.width = `${percent}%`;
       txt.innerText = `当前进度：${percent}% (${currentIdx}/${activeQuestions.length} 题已完成)`;
     }
@@ -724,6 +687,14 @@
           <p style="margin-top: 10px; font-size: 14px;">你可以修改 <code>questions.js</code> 往里面塞入错题数据哦！</p>
         </div>
       `;
+    }
+
+    function renderMathJax() {
+      if (window.MathJax && window.MathJax.typesetPromise) {
+        window.MathJax.typesetPromise().catch(function (err) {
+          console.warn('MathJax typeset failed: ', err.message);
+        });
+      }
     }
   </script>
 </body>
