@@ -13,6 +13,8 @@
       --text-main: #2d3748;
       --text-muted: #718096;
       --border-color: #e2e8f0;
+      --accent-color: #ed8936;
+      --accent-hover: #dd6b20;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -71,6 +73,51 @@
       width: 100%;
       max-width: 800px;
     }
+
+    /* 顶部控制栏（选题与模式切换） */
+    .control-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .jump-box {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+    .select-dropdown {
+      padding: 6px 12px;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      background-color: #fff;
+      color: var(--text-main);
+      font-size: 14px;
+      font-weight: bold;
+      outline: none;
+      cursor: pointer;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+    }
+    .mode-btn {
+      padding: 6px 14px;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      background-color: #fff;
+      color: #4a5568;
+      font-size: 13px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .mode-btn:hover {
+      background-color: #edf2f7;
+    }
+
     /* 进度条 */
     .progress-wrapper { margin-bottom: 25px; }
     .progress-bar-bg {
@@ -93,6 +140,7 @@
       margin-top: 6px;
       font-weight: bold;
     }
+
     /* 卡片 */
     .card {
       background: var(--card-bg);
@@ -121,7 +169,7 @@
       background-color: #fff5f5;
       color: #c53030;
     }
-    .title { font-size: 18px; font-weight: bold; margin-bottom: 15px; }
+    .title { font-size: 18px; font-weight: bold; margin-bottom: 15px; line-height: 1.6; }
     img {
       max-width: 100%;
       height: auto;
@@ -130,6 +178,7 @@
       border: 1px solid #edf2f7;
       border-radius: 8px;
     }
+
     /* 选项 */
     .options-grid {
       display: grid;
@@ -167,6 +216,8 @@
       border-color: #e53e3e !important;
       color: #9b2c2c !important;
     }
+
+    /* 底部交互区 */
     .footer-zone {
       display: flex;
       flex-direction: column;
@@ -174,15 +225,22 @@
       gap: 15px;
       margin-top: 20px;
     }
+    .btn-group {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
     .feedback { font-weight: bold; font-size: 16px; min-height: 24px; text-align: center; }
     .feedback.correct { color: #38a169; }
     .feedback.wrong { color: #e53e3e; }
+    .feedback.info { color: var(--accent-hover); }
     
     .action-btn {
       background-color: var(--primary-color);
       color: white;
       border: none;
-      padding: 12px 32px;
+      padding: 12px 28px;
       border-radius: 8px;
       font-size: 15px;
       font-weight: bold;
@@ -200,6 +258,18 @@
     .submit-btn:hover {
       background-color: #1976d2;
     }
+    .reveal-btn {
+      background-color: #ffffff;
+      color: #718096;
+      border: 1px solid #cbd5e0;
+      box-shadow: none;
+    }
+    .reveal-btn:hover {
+      background-color: #f7fafc;
+      color: #2d3748;
+      border-color: #a0aec0;
+    }
+
     .analysis-box {
       margin-top: 25px;
       padding-top: 25px;
@@ -273,6 +343,18 @@
         font-size: 18px;
         border-radius: 8px;
       }
+      .control-toolbar {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .btn-group {
+        width: 100%;
+      }
+      .action-btn {
+        flex: 1;
+        padding: 12px 10px;
+        font-size: 14px;
+      }
     }
   </style>
   
@@ -314,6 +396,18 @@
 
   <div class="main-content">
     <div class="quiz-container">
+      
+      <!-- 顶部控制面板 -->
+      <div class="control-toolbar">
+        <div class="jump-box">
+          <label for="question-select">跳转题目：</label>
+          <select id="question-select" class="select-dropdown" onchange="jumpToQuestion(this.value)">
+            <option value="0">加载中...</option>
+          </select>
+        </div>
+        <button id="mode-toggle-btn" class="mode-btn" onclick="toggleOrderMode()">🔀 当前：乱序模式 (点击切换)</button>
+      </div>
+
       <div class="progress-wrapper">
         <div class="progress-bar-bg">
           <div id="progress-fill" class="progress-bar-fill"></div>
@@ -325,11 +419,8 @@
   </div>
 
   <script>
-    // ⚡ 强力纠偏：直接死死锁住你当前真正的 review_Powergrid 仓库！
-    const userName = "suzie0121511-hate";
-    const repoName = "review_Powergrid"; 
-    const cdnBase = `https://cdn.jsdelivr.net/gh/${userName}/${repoName}@main/`;
-
+    let currentCategory = 'circuit';
+    let isShuffleMode = true;
     let activeQuestions = [];
     let currentIdx = 0;
     let selectedOptions = [];
@@ -347,9 +438,17 @@
     }
 
     function switchCategory(catKey, menuEl) {
+      currentCategory = catKey;
       document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
       menuEl.classList.add('active');
       loadCategory(catKey);
+    }
+
+    function toggleOrderMode() {
+      isShuffleMode = !isShuffleMode;
+      const btn = document.getElementById('mode-toggle-btn');
+      btn.innerText = isShuffleMode ? '🔀 当前：乱序模式 (点击切换)' : '📑 当前：顺序模式 (点击切换)';
+      loadCategory(currentCategory);
     }
 
     function loadCategory(catKey) {
@@ -366,26 +465,48 @@
       
       activeQuestions = JSON.parse(JSON.stringify(rawData));
       
-      for (let i = activeQuestions.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [activeQuestions[i], activeQuestions[j]] = [activeQuestions[j], activeQuestions[i]];
+      if (isShuffleMode) {
+        for (let i = activeQuestions.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [activeQuestions[i], activeQuestions[j]] = [activeQuestions[j], activeQuestions[i]];
+        }
       }
 
+      populateQuestionSelector();
       currentIdx = 0;
       renderQuestion();
     }
 
+    function populateQuestionSelector() {
+      const select = document.getElementById('question-select');
+      select.innerHTML = '';
+      activeQuestions.forEach((q, idx) => {
+        const opt = document.createElement('option');
+        opt.value = idx;
+        const qIdText = q.id !== undefined ? ` [ID:${q.id}]` : '';
+        opt.textContent = `第 ${idx + 1} 题${qIdText} (${q.type || '单选'})`;
+        select.appendChild(opt);
+      });
+    }
+
+    function jumpToQuestion(idx) {
+      currentIdx = parseInt(idx, 10);
+      renderQuestion();
+    }
+
     function renderQuestion() {
+      const select = document.getElementById('question-select');
+      if (select && select.value != currentIdx) {
+        select.value = currentIdx;
+      }
+
       const card = document.getElementById('quiz-card');
       const q = activeQuestions[currentIdx];
       
       selectedOptions = [];
 
-      // ⚡ URL 安全转码：对每一部分路径、中文名、空格进行完全转码，100%防死锁、防404
-     // 替换为这套：不用 CDN，直接用相对路径智能秒开！
       let imgHtml = "";
       if (q.image && q.image.trim() !== "") {
-        // 使用相对路径加载同仓库下的图片，既安全又秒开
         const relativeUrl = q.image.split('/').map(part => encodeURIComponent(part)).join('/');
         imgHtml = `<img src="${relativeUrl}" alt="题目插图">`;
       }
@@ -409,8 +530,11 @@
         </div>
         <div class="footer-zone">
           <div id="feedback-txt" class="feedback"></div>
-          <button id="submit-btn" class="action-btn submit-btn" style="display: ${isMulti ? 'block' : 'none'};" onclick="submitMultiAnswer()">确认提交</button>
-          <button id="next-btn" class="action-btn" style="display: none;" onclick="goNext()">下一题 ➔</button>
+          <div class="btn-group">
+            <button id="reveal-btn" class="action-btn reveal-btn" onclick="revealAnswer()">直接看答案</button>
+            <button id="submit-btn" class="action-btn submit-btn" style="display: ${isMulti ? 'inline-block' : 'none'};" onclick="submitMultiAnswer()">确认提交</button>
+            <button id="next-btn" class="action-btn" style="display: none;" onclick="goNext()">下一题 ➔</button>
+          </div>
         </div>
         <div id="analysis-section" class="analysis-box" style="display: none;">
           <strong style="color: #2b6cb0;">✨ 标准答案：${q.answer}</strong><br><br>
@@ -474,7 +598,7 @@
         feedback.innerHTML = '🎉 回答正确！已解锁解析。';
         feedback.className = 'feedback correct';
         analysisSection.style.display = 'block';
-        nextBtn.style.display = 'block';
+        nextBtn.style.display = 'inline-block';
       } else {
         btn.classList.add('wrong');
         feedback.innerHTML = '❌ 答案错误，再换一个选项试试！';
@@ -515,7 +639,7 @@
         feedback.innerHTML = '🎉 回答正确！已解锁解析。';
         feedback.className = 'feedback correct';
         analysisSection.style.display = 'block';
-        nextBtn.style.display = 'block';
+        nextBtn.style.display = 'inline-block';
         if (submitBtn) submitBtn.style.display = 'none';
       } else {
         allButtons.forEach(b => {
@@ -535,6 +659,36 @@
       }
     }
 
+    function revealAnswer() {
+      const q = activeQuestions[currentIdx];
+      const feedback = document.getElementById('feedback-txt');
+      const nextBtn = document.getElementById('next-btn');
+      const submitBtn = document.getElementById('submit-btn');
+      const analysisSection = document.getElementById('analysis-section');
+      const allButtons = document.querySelectorAll('.option-btn');
+
+      const correctAnsString = q.answer.split('').sort().join('');
+
+      allButtons.forEach(b => {
+        const letter = b.getAttribute('data-letter');
+        if (correctAnsString.includes(letter)) {
+          b.className = 'option-btn correct';
+        } else {
+          b.className = 'option-btn';
+        }
+      });
+
+      feedback.innerHTML = '📖 已显示正确答案与解析。';
+      feedback.className = 'feedback info';
+      analysisSection.style.display = 'block';
+      nextBtn.style.display = 'inline-block';
+      if (submitBtn) submitBtn.style.display = 'none';
+
+      if (window.MathJax && window.MathJax.typeset) {
+        window.MathJax.typeset();
+      }
+    }
+
     function goNext() {
       currentIdx++;
       if (currentIdx < activeQuestions.length) {
@@ -546,7 +700,7 @@
           <div style="text-align: center; padding: 40px 0;">
             <h2 style="color: var(--primary-color); margin-bottom: 15px;">🎉 完美通关！</h2>
             <p style="color: var(--text-muted); font-size: 15px;">当前板块的所有错题已经全部攻克！</p>
-            <button class="action-btn" style="margin-top: 25px;" onclick="location.reload()">重新打乱再练一次</button>
+            <button class="action-btn" style="margin-top: 25px;" onclick="loadCategory(currentCategory)">再练一次该科目</button>
           </div>
         `;
       }
@@ -563,6 +717,7 @@
     function showEmptyState() {
       document.getElementById('progress-fill').style.width = '0%';
       document.getElementById('progress-txt').innerText = `进度：0% (0/0)`;
+      document.getElementById('question-select').innerHTML = '<option>无题目</option>';
       document.getElementById('quiz-card').innerHTML = `
         <div class="empty-state">
           <h3>📭 当前板块暂无错题</h3>
